@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;800;900&family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#06080f;--card:rgba(255,255,255,0.03);--card-b:rgba(255,255,255,0.06);--text:#e2e8f0;--text2:rgba(255,255,255,0.5);--text3:rgba(255,255,255,0.25);--blue:#60a5fa;--green:#4ade80;--pink:#f472b6;--amber:#fbbf24;--red:#f87171;--purple:#a78bfa;--indigo:#818cf8;--coupang:#e31837}
+:root{--bg:#06080f;--card:rgba(255,255,255,0.03);--card-b:rgba(255,255,255,0.06);--text:#e2e8f0;--text2:rgba(255,255,255,0.5);--text3:rgba(255,255,255,0.25);--blue:#60a5fa;--green:#4ade80;--pink:#f472b6;--amber:#fbbf24;--red:#f87171;--purple:#a78bfa;--coupang:#e31837}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);font-family:'Noto Sans KR','Outfit',sans-serif;color:var(--text);overflow-x:hidden}
 ::-webkit-scrollbar{display:none} input::placeholder{color:var(--text3)}
@@ -53,12 +53,7 @@ body{background:var(--bg);font-family:'Noto Sans KR','Outfit',sans-serif;color:v
 <div class="app" id="app"></div>
 <script>
 // ═══════════════════════════════════════
-//  쿠팡 파트너스 설정
-// ═══════════════════════════════════════
-const COUPANG_AF_ID="YOUR_AF_CODE"; // ← 쿠팡 파트너스 AF 코드 입력
-function coupangLink(itemId,vendorItemId){
-  return`https://link.coupang.com/re/${COUPANG_AF_ID}?itemId=${itemId}&vendorItemId=${vendorItemId}&sourceType=srp&subId=carwashday`;}
-
+//  실제 쿠팡 파트너스 링크 (AF9906978)
 // ═══════════════════════════════════════
 const DAYS_KR=["일","월","화","수","목","금","토"];const today=new Date();today.setHours(0,0,0,0);
 let state={tab:"home",selectedDate:new Date(today),currentMonth:new Date(today),isPremium:false,showPremiumModal:false,showAddLog:false,
@@ -73,36 +68,45 @@ const SHOPS=[
   {name:"디테일링 마스터",type:"디테일링",dist:"2.5km",rating:4.9,price:"80,000원~",discount:"코팅 15% 할인",img:"✨",hours:"09:00-19:00",tags:["디테일링","코팅"]},
   {name:"버블워시 판교점",type:"셀프",dist:"1.8km",rating:4.6,price:"6,000원~",discount:"야간할인 30%",img:"🫧",hours:"24시간",tags:["셀프","24시간"]}];
 
+// ★ 실제 쿠팡 파트너스 단축 URL 적용
 const PRODUCTS=[
-  {name:"소낙스 글로스 샴푸 1L",price:"18,900",orig:"23,000",disc:18,rating:4.7,reviews:2847,img:"🧴",cat:"샴푸",badge:"BEST",rocket:true,
+  {name:"소낙스 글로스 세차샴푸 1L",price:"19,200",orig:"23,000",disc:16,rating:4.7,reviews:2847,img:"🧴",cat:"샴푸",badge:"BEST",rocket:true,
    desc:"독일 No.1 세차 브랜드. 풍성한 거품으로 도장면 보호하며 세차. 중성 pH로 코팅 위에도 안전.",
-   specs:["용량: 1,000ml","pH: 중성","원산지: 독일"],itemId:"12345678",vendorItemId:"87654321"},
-  {name:"케미컬가이즈 워시미트",price:"15,500",orig:"19,900",disc:22,rating:4.8,reviews:1923,img:"🧤",cat:"워시미트",badge:"HOT",rocket:true,
-   desc:"초극세사 소재로 스크래치 없이 부드러운 세차. 양면 사용 가능.",
-   specs:["소재: 극세사","크기: 20×28cm","원산지: 미국"],itemId:"23456789",vendorItemId:"98765432"},
-  {name:"마프라 퀵 디테일러 500ml",price:"22,000",orig:"28,000",disc:21,rating:4.6,reviews:1245,img:"💦",cat:"디테일러",badge:"NEW",rocket:false,
+   specs:["용량: 1,000ml","pH: 중성","원산지: 독일"],
+   url:"https://link.coupang.com/a/dHnjfg"},
+  {name:"이엑스큐 핵사 클레이 미트",price:"23,900",orig:"28,000",disc:15,rating:4.8,reviews:1923,img:"🧤",cat:"워시미트",badge:"HOT",rocket:true,
+   desc:"워시미트 + 클레이바 기능이 합쳐진 올인원 미트. 세차하면서 동시에 철분 오염 제거.",
+   specs:["소재: 극세사+클레이","원산지: 한국","세탁: 세탁기 사용 가능"],
+   url:"https://link.coupang.com/a/dHnnx4"},
+  {name:"마프라 매니악 퀵 디테일러 500ml",price:"18,500",orig:"22,000",disc:16,rating:4.6,reviews:1245,img:"💦",cat:"디테일러",badge:"NEW",rocket:true,
    desc:"세차 후 물기 제거와 동시에 광택. 스프레이 후 타월로 닦기만 하면 완료.",
-   specs:["용량: 500ml","타입: 스프레이","원산지: 이탈리아"],itemId:"34567890",vendorItemId:"09876543"},
-  {name:"카프로 세라믹 코팅제",price:"45,000",orig:"55,000",disc:18,rating:4.9,reviews:3156,img:"🛡️",cat:"코팅",badge:"PREMIUM",rocket:true,
-   desc:"SiO2 기반 세라믹 코팅. 발수 효과 최대 6개월 지속. DIY 시공 가능.",
-   specs:["용량: 100ml","성분: SiO2","지속: 약 6개월"],itemId:"45678901",vendorItemId:"10987654"},
-  {name:"극세사 드라잉 타월 3P",price:"12,900",orig:"16,000",disc:19,rating:4.5,reviews:5234,img:"🏳️",cat:"타월",badge:"BEST",rocket:true,
-   desc:"1200GSM 초고밀도 극세사. 한 장으로 차 한 대 물기 제거 가능.",
-   specs:["크기: 60×40cm 3장","밀도: 1200GSM"],itemId:"56789012",vendorItemId:"21098765"},
-  {name:"타이어 광택제 500ml",price:"9,900",orig:"13,000",disc:24,rating:4.4,reviews:987,img:"⚫",cat:"타이어",badge:"",rocket:false,
-   desc:"스프레이 타입으로 간편하게 타이어 광택. 자연스러운 무광 마감.",
-   specs:["용량: 500ml","마감: 무광","지속: 약 2주"],itemId:"67890123",vendorItemId:"32109876"},
-  {name:"철분제거제 스프레이",price:"16,500",orig:"20,000",disc:18,rating:4.7,reviews:2103,img:"🔴",cat:"클리너",badge:"HOT",rocket:true,
-   desc:"뿌리면 보라색으로 변하며 철분 오염을 녹여냄. 브레이크 더스트 제거 탁월.",
-   specs:["용량: 500ml","반응: 보라색 변색","pH: 중성"],itemId:"78901234",vendorItemId:"43210987"},
-  {name:"워터스팟 리무버",price:"19,800",orig:"25,000",disc:21,rating:4.5,reviews:1567,img:"💧",cat:"클리너",badge:"",rocket:false,
-   desc:"세차 후 남은 물 자국을 깔끔하게 제거. 유리면과 도장면 모두 사용 가능.",
-   specs:["용량: 500ml","사용: 유리/도장면"],itemId:"89012345",vendorItemId:"54321098"}];
+   specs:["용량: 500ml","타입: 스프레이","원산지: 이탈리아"],
+   url:"https://link.coupang.com/a/dHnqsJ"},
+  {name:"카프로 릴리스 세라믹 코팅 보호제 500ml",price:"8,930",orig:"25,900",disc:65,rating:4.9,reviews:3156,img:"🛡️",cat:"코팅",badge:"SALE",rocket:true,
+   desc:"세라믹 코팅 보호제. 기존 코팅 위에 덧발라 지속력 연장. 간편 스프레이 타입.",
+   specs:["용량: 500ml","성분: 세라믹","원산지: 이스라엘"],
+   url:"https://link.coupang.com/a/dHnxZ0"},
+  {name:"코멧 극세사 청소 타월 5P",price:"5,050",orig:"8,000",disc:37,rating:4.5,reviews:5234,img:"🏳️",cat:"타월",badge:"BEST",rocket:true,
+   desc:"부드러운 극세사 소재 5장 세트. 세차 후 물기 제거 및 실내 청소에 활용.",
+   specs:["크기: 40×40cm 5장","소재: 극세사"],
+   url:"https://link.coupang.com/a/dHnBzW"},
+  {name:"불스원 하이 글로시 타이어 코팅제 600ml",price:"7,540",orig:"10,000",disc:24,rating:4.4,reviews:987,img:"⚫",cat:"타이어",badge:"",rocket:true,
+   desc:"스프레이 타입으로 타이어에 뿌리기만 하면 새것 같은 윤기. 하이글로시 마감.",
+   specs:["용량: 600ml","마감: 고광택","브랜드: 불스원"],
+   url:"https://link.coupang.com/a/dHpmR1"},
+  {name:"아이언킬 철분제거제 1L",price:"5,830",orig:"8,000",disc:27,rating:4.7,reviews:2103,img:"🔴",cat:"클리너",badge:"HOT",rocket:true,
+   desc:"뿌리면 보라색으로 변하며 철분 오염을 녹여냄. 대용량 1L로 가성비 최고.",
+   specs:["용량: 1,000ml","반응: 보라색 변색","pH: 중성"],
+   url:"https://link.coupang.com/a/dHpIsD"},
+  {name:"플레이왁스 워터스팟 카샴푸 리무버 500ml",price:"13,900",orig:"25,000",disc:44,rating:4.5,reviews:1567,img:"💧",cat:"클리너",badge:"SALE",rocket:false,
+   desc:"세차와 물때 제거를 동시에. 워터스팟 전용 카샴푸로 깔끔한 마무리.",
+   specs:["용량: 500ml","타입: 카샴푸","효과: 물때 제거"],
+   url:"https://link.coupang.com/a/dHpLTQ"}];
 
 const BANNERS=[
   {text:"🚗 인스타워시 출장세차 — 첫 이용 50% 할인!",bg:"linear-gradient(135deg,#6366f1,#8b5cf6)",cta:"바로가기 →"},
-  {text:"🧴 케미컬가이즈 봄맞이 세일 최대 40% OFF",bg:"linear-gradient(135deg,#f59e0b,#ef4444)",cta:"쇼핑하기 →"},
-  {text:"🛡️ 카프로 세라믹코팅 체험 이벤트!",bg:"linear-gradient(135deg,#06b6d4,#3b82f6)",cta:"참여하기 →"}];
+  {text:"🧴 세차용품 최대 65% 할인 세일 중!",bg:"linear-gradient(135deg,#f59e0b,#ef4444)",cta:"쇼핑하기 →"},
+  {text:"🛡️ 카프로 세라믹코팅 65% 할인 이벤트!",bg:"linear-gradient(135deg,#06b6d4,#3b82f6)",cta:"구매하기 →"}];
 
 function genWeather(d){const s=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(),h=((s*2654435761)>>>0)%1000;
   const c=[{type:"sunny",label:"맑음",icon:"☀️",rain:5},{type:"partly",label:"구름 조금",icon:"⛅",rain:12},{type:"cloudy",label:"흐림",icon:"☁️",rain:25},
@@ -129,8 +133,12 @@ function ringSVG(score,size=110){const g=grade(score),r=(size-12)/2,c=2*Math.PI*
     <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="7"/>
     <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${g.color}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" style="transition:stroke-dashoffset 0.8s ease"/>
     </svg><div class="center"><span class="score-num" style="font-size:${size*0.24}px;color:${g.color}">${score}</span><span class="score-max">/ 100</span></div></div>`;}
-function goToCoupang(idx){const p=PRODUCTS[idx];const url=coupangLink(p.itemId,p.vendorItemId);
-  if(window.NativeBridge&&window.NativeBridge.isNativeApp){window.NativeBridge.openURL(url);}else{window.open(url,'_blank');}}
+
+// ★ 실제 쿠팡 파트너스 링크로 이동
+function goToCoupang(idx){
+  const p=PRODUCTS[idx];
+  window.open(p.url,'_blank');
+}
 function openProduct(idx){state.selectedProduct=idx;render();}
 function closeProduct(){state.selectedProduct=null;render();}
 
@@ -148,7 +156,7 @@ function render(){
       <div style="font-size:10px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;font-family:Outfit">Car Wash Advisor</div>
       <h1 style="font-size:24px;font-weight:900;margin:4px 0 0;background:linear-gradient(135deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🚿 세차의 날</h1></div>`;
     if(S.showBanner&&!S.isPremium){const b=BANNERS[S.bannerIdx%BANNERS.length];
-      html+=`<div class="banner-ad" style="background:${b.bg}" onclick="notify('광고 이동')"><div class="flex-b">
+      html+=`<div class="banner-ad" style="background:${b.bg}" onclick="setTab('shop')"><div class="flex-b">
         <div style="font-size:13px;font-weight:600;color:#fff;flex:1;line-height:1.4">${b.text}</div>
         <div style="background:rgba(255,255,255,0.25);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;margin-left:10px">${b.cta}</div></div>
         <div style="position:absolute;top:4px;right:8px;font-size:9px;color:rgba(255,255,255,0.35);cursor:pointer" onclick="event.stopPropagation();state.showBanner=false;render();">광고 ✕</div></div>`;}
@@ -188,7 +196,7 @@ function render(){
           <div style="font-size:10px;color:var(--text2);line-height:1.3;margin-bottom:3px;height:26px;overflow:hidden">${p.name}</div>
           <div class="flex-c" style="gap:3px;margin-bottom:2px"><span class="coupang-price" style="font-size:14px">₩${p.price}</span><span style="font-size:9px;color:var(--red);font-weight:800">${p.disc}%</span></div>
           ${p.rocket?'<div class="coupang-rocket">🚀 로켓배송</div>':''}</div>`).join('')}</div>
-      <div style="text-align:center;margin-top:6px;font-size:9px;color:var(--text3)">쿠팡 파트너스 활동으로 일정액의 수수료를 제공받습니다</div></div></div>`;
+      <div style="text-align:center;margin-top:6px;font-size:9px;color:var(--text3)">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div></div></div>`;
   }
 
   // CALENDAR
@@ -226,7 +234,7 @@ function render(){
       <div class="chips">${["전체","샴푸","워시미트","디테일러","코팅","타월","타이어","클리너"].map(f=>`<div class="chip${S.prodFilter===f?' active':''}" onclick="state.prodFilter='${f}';render();">${f}</div>`).join('')}</div>
       <div class="grid-2">${fl.map(p=>{const ri=PRODUCTS.indexOf(p);
         return`<div class="prod-card" onclick="openProduct(${ri})">
-          ${p.badge?`<div class="prod-badge" style="background:${p.badge==="PREMIUM"?"rgba(245,158,11,0.25);color:var(--amber)":"rgba(227,24,55,0.15);color:#ff6b7a"}">${p.badge}</div>`:''}
+          ${p.badge?`<div class="prod-badge" style="background:${p.badge==="SALE"?"rgba(34,197,94,0.2);color:var(--green)":p.badge==="PREMIUM"?"rgba(245,158,11,0.25);color:var(--amber)":"rgba(227,24,55,0.15);color:#ff6b7a"}">${p.badge}</div>`:''}
           <div style="font-size:32px;margin-bottom:6px;text-align:center">${p.img}</div>
           <div style="font-size:11px;color:var(--text2);line-height:1.3;margin-bottom:4px;min-height:28px">${p.name}</div>
           <div class="flex-c" style="gap:4px;margin-bottom:2px"><span class="coupang-price" style="font-size:15px">₩${p.price}</span></div>
@@ -234,7 +242,7 @@ function render(){
           <div style="font-size:10px;color:var(--text2);margin-top:3px"><span class="stars">${starsHTML(p.rating)}</span> ${p.rating} (${p.reviews.toLocaleString()})</div>
           ${p.rocket?'<div class="coupang-rocket" style="margin-top:3px">🚀 로켓배송</div>':''}
           <div style="margin-top:6px;background:var(--coupang);text-align:center;border-radius:7px;padding:6px 0;font-size:11px;font-weight:700;color:#fff">쿠팡에서 보기</div></div>`;}).join('')}</div>
-      <div style="text-align:center;padding:14px 0;font-size:9px;color:var(--text3);line-height:1.6">쿠팡 파트너스 활동으로 일정액의 수수료를 제공받습니다</div></div>`;}
+      <div style="text-align:center;padding:14px 0;font-size:9px;color:var(--text3);line-height:1.6">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div></div>`;}
 
   // MY CAR
   if(S.tab==="mycar"){const total=S.washLogs.reduce((a,b)=>a+b.cost,0);
@@ -273,7 +281,7 @@ function render(){
         ${p.specs.map(s=>`<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:11px;color:var(--text2)">${s}</div>`).join('')}</div>
       <button class="btn btn-coupang" onclick="goToCoupang(${S.selectedProduct})">🔗 쿠팡에서 최저가로 구매하기</button>
       <button class="btn btn-ghost" style="margin-top:8px;font-size:12px" onclick="goToCoupang(${S.selectedProduct})">쿠팡 앱에서 열기 →</button>
-      <div style="text-align:center;margin-top:10px;font-size:9px;color:var(--text3);line-height:1.6">쿠팡 파트너스 활동으로 일정액의 수수료를 제공받습니다</div>
+      <div style="text-align:center;margin-top:10px;font-size:9px;color:var(--text3);line-height:1.6">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
       <button class="btn" style="background:transparent;color:var(--text3);font-size:12px;margin-top:8px" onclick="closeProduct()">닫기</button></div></div>`;}
 
   // PREMIUM MODAL
