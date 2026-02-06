@@ -186,7 +186,9 @@ function render(){
           <div style="width:100%;min-width:14px;height:${h}px;border-radius:4px;background:linear-gradient(to top,${g2.color},${g2.color}88);${sel?'border:2px solid #fff':''}"></div>
           <span style="font-size:8px;color:var(--text3)">${i===0?"오늘":DAYS_KR[it.date.getDay()]}</span></div>`;}).join('')}</div></div>`;
     // 쿠팡 추천 상품
-    html+=`<div style="margin-bottom:14px"><div class="flex-b" style="margin-bottom:8px">
+    html+=`<div style="margin-bottom:14px">
+      <div style="background:rgba(227,24,55,0.1);border:1px solid rgba(227,24,55,0.2);border-radius:10px;padding:10px 14px;margin-bottom:10px;text-align:center"><span style="font-size:13px;font-weight:800;color:#ff4154">📢 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</span></div>
+      <div class="flex-b" style="margin-bottom:8px">
       <div><span style="font-size:12px;font-weight:700">${isGoodDay?'🔥 오늘 세차 준비물':'🛒 인기 세차용품'}</span><span class="coupang-tag" style="margin-left:6px">쿠팡</span></div>
       <span style="font-size:10px;color:var(--blue);cursor:pointer" onclick="setTab('shop')">전체보기 →</span></div>
       ${isGoodDay?`<div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.1);border-radius:10px;padding:8px 12px;margin-bottom:8px;font-size:11px;color:var(--green)">✨ 세차 점수 ${sc}점! 지금 준비하세요</div>`:''}
@@ -196,7 +198,7 @@ function render(){
           <div style="font-size:10px;color:var(--text2);line-height:1.3;margin-bottom:3px;height:26px;overflow:hidden">${p.name}</div>
           <div class="flex-c" style="gap:3px;margin-bottom:2px"><span class="coupang-price" style="font-size:14px">₩${p.price}</span><span style="font-size:9px;color:var(--red);font-weight:800">${p.disc}%</span></div>
           ${p.rocket?'<div class="coupang-rocket">🚀 로켓배송</div>':''}</div>`).join('')}</div>
-      <div style="text-align:center;margin-top:6px;font-size:9px;color:var(--text3)">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div></div></div>`;
+      <div style="text-align:center;margin-top:8px;font-size:12px;color:#ff4154;font-weight:700">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div></div></div>`;
   }
 
   // CALENDAR
@@ -230,7 +232,8 @@ function render(){
   if(S.tab==="shop"){const fl=S.prodFilter==="전체"?PRODUCTS:PRODUCTS.filter(p=>p.cat===S.prodFilter);
     html+=`<div class="page"><div class="flex-b" style="margin:6px 0 4px"><div><h2 style="font-size:18px;font-weight:800;display:inline">🛒 세차용품</h2>
       <span class="coupang-tag" style="margin-left:6px">쿠팡 파트너스</span></div></div>
-      <p style="font-size:11px;color:var(--text3);margin:4px 0 12px">최저가 · 로켓배송 · 구매 시 앱 지원에 도움이 됩니다</p>
+      <p style="font-size:11px;color:var(--text3);margin:4px 0 8px">최저가 · 로켓배송 · 구매 시 앱 지원에 도움이 됩니다</p>
+      <div style="background:rgba(227,24,55,0.1);border:1px solid rgba(227,24,55,0.2);border-radius:10px;padding:10px 14px;margin-bottom:10px;text-align:center"><span style="font-size:13px;font-weight:800;color:#ff4154">📢 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</span></div>
       <div class="chips">${["전체","샴푸","워시미트","디테일러","코팅","타월","타이어","클리너"].map(f=>`<div class="chip${S.prodFilter===f?' active':''}" onclick="state.prodFilter='${f}';render();">${f}</div>`).join('')}</div>
       <div class="grid-2">${fl.map(p=>{const ri=PRODUCTS.indexOf(p);
         return`<div class="prod-card" onclick="openProduct(${ri})">
@@ -242,7 +245,7 @@ function render(){
           <div style="font-size:10px;color:var(--text2);margin-top:3px"><span class="stars">${starsHTML(p.rating)}</span> ${p.rating} (${p.reviews.toLocaleString()})</div>
           ${p.rocket?'<div class="coupang-rocket" style="margin-top:3px">🚀 로켓배송</div>':''}
           <div style="margin-top:6px;background:var(--coupang);text-align:center;border-radius:7px;padding:6px 0;font-size:11px;font-weight:700;color:#fff">쿠팡에서 보기</div></div>`;}).join('')}</div>
-      <div style="text-align:center;padding:14px 0;font-size:9px;color:var(--text3);line-height:1.6">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div></div>`;}
+      <div style="text-align:center;padding:14px 0;font-size:13px;color:#ff4154;font-weight:800;line-height:1.6">📢 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div></div>`;}
 
   // MY CAR
   if(S.tab==="mycar"){const total=S.washLogs.reduce((a,b)=>a+b.cost,0);
@@ -281,7 +284,7 @@ function render(){
         ${p.specs.map(s=>`<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:11px;color:var(--text2)">${s}</div>`).join('')}</div>
       <button class="btn btn-coupang" onclick="goToCoupang(${S.selectedProduct})">🔗 쿠팡에서 최저가로 구매하기</button>
       <button class="btn btn-ghost" style="margin-top:8px;font-size:12px" onclick="goToCoupang(${S.selectedProduct})">쿠팡 앱에서 열기 →</button>
-      <div style="text-align:center;margin-top:10px;font-size:9px;color:var(--text3);line-height:1.6">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
+      <div style="text-align:center;margin-top:10px;font-size:12px;color:#ff4154;font-weight:700;line-height:1.6">📢 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
       <button class="btn" style="background:transparent;color:var(--text3);font-size:12px;margin-top:8px" onclick="closeProduct()">닫기</button></div></div>`;}
 
   // PREMIUM MODAL
