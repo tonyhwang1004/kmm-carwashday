@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
+<title>세차의 날 | CarWash Day</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;800;900&family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#06080f;--card:rgba(255,255,255,0.03);--card-b:rgba(255,255,255,0.06);--text:#e2e8f0;--text2:rgba(255,255,255,0.5);--text3:rgba(255,255,255,0.25);--blue:#60a5fa;--green:#4ade80;--pink:#f472b6;--amber:#fbbf24;--red:#f87171;--purple:#a78bfa;--indigo:#818cf8;--coupang:#e31837}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);font-family:'Noto Sans KR','Outfit',sans-serif;color:var(--text);overflow-x:hidden}
+::-webkit-scrollbar{display:none} input::placeholder{color:var(--text3)}
+.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;background:linear-gradient(170deg,#06080f 0%,#0d1225 30%,#0a1628 60%,#06080f 100%)}
+.page{padding:16px 16px 90px;position:relative;z-index:1}
+.card{background:var(--card);border:1px solid var(--card-b);border-radius:16px;padding:16px;margin-bottom:12px;backdrop-filter:blur(12px);transition:transform 0.2s}
+.card:active{transform:scale(0.985)}
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(6,8,15,0.92);backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,0.05);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0 8px;cursor:pointer;color:var(--text3);font-size:10px;transition:all 0.2s}
+.tab-item.active{color:var(--blue)} .tab-item .icon{font-size:20px;transition:transform 0.2s} .tab-item.active .icon{transform:scale(1.15)}
+.ring-wrap{position:relative;flex-shrink:0} .ring-wrap .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-wrap .score-num{font-family:'Outfit';font-weight:900} .ring-wrap .score-max{font-size:10px;color:var(--text3)}
+.chips{display:flex;gap:5px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.chip{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;background:rgba(255,255,255,0.04);color:var(--text2);border:1px solid rgba(255,255,255,0.06);transition:all 0.2s}
+.chip.active{background:rgba(96,165,250,0.15);color:var(--blue);border-color:rgba(96,165,250,0.25)}
+.btn{width:100%;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s}
+.btn:active{transform:scale(0.97)} .btn-blue{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff} .btn-green{background:linear-gradient(135deg,#22c55e,#10b981);color:#fff}
+.btn-amber{background:linear-gradient(135deg,#f59e0b,#f97316);color:#000} .btn-ghost{background:rgba(255,255,255,0.05);color:var(--text2);border:1px solid var(--card-b)}
+.btn-coupang{background:linear-gradient(135deg,#e31837,#ff4154);color:#fff;font-size:15px;padding:14px;box-shadow:0 4px 20px rgba(227,24,55,0.3)}
+.banner-ad{border-radius:14px;padding:14px 16px;margin-bottom:14px;cursor:pointer;position:relative}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px} .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.flex-c{display:flex;align-items:center} .flex-b{display:flex;align-items:center;justify-content:space-between}
+.wx-mini{background:rgba(255,255,255,0.03);border-radius:10px;padding:8px 10px;border:1px solid rgba(255,255,255,0.03)}
+.wx-mini .label{font-size:9px;color:var(--text3);margin-bottom:2px} .wx-mini .val{font-size:13px;font-weight:600}
+.prod-card{background:var(--card);border-radius:14px;padding:12px;border:1px solid var(--card-b);cursor:pointer;position:relative;transition:transform 0.15s}
+.prod-card:active{transform:scale(0.96)} .prod-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:800}
+.forecast-bar{display:flex;gap:3px;align-items:flex-end;height:70px;overflow-x:auto}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:7px;font-size:11px;cursor:pointer;transition:all 0.15s;border:1px solid transparent}
+.cal-day.today{border:2px solid rgba(255,255,255,0.35)!important} .cal-day.selected{background:rgba(255,255,255,0.2)!important;font-weight:800;color:#fff!important}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);z-index:200;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn 0.25s ease}
+.modal-sheet{background:linear-gradient(160deg,#141833,#0f172a);border-radius:22px 22px 0 0;padding:24px;max-width:480px;width:100%;border:1px solid var(--card-b);border-bottom:none;max-height:85vh;overflow-y:auto;animation:slideUp 0.3s ease}
+.modal-box{background:linear-gradient(160deg,#1e1b4b,#0f172a);border-radius:22px;padding:24px;max-width:360px;width:100%;border:1px solid rgba(234,179,8,0.2);max-height:85vh;overflow-y:auto}
+.notif{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(20,24,51,0.95);backdrop-filter:blur(12px);border:1px solid var(--card-b);border-radius:12px;padding:10px 18px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:slideDown 0.3s ease}
+.pro-badge{position:fixed;top:10px;right:14px;background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.3);border-radius:16px;padding:3px 10px;font-size:10px;font-weight:800;color:var(--amber);z-index:50}
+.coupang-tag{display:inline-flex;align-items:center;gap:3px;background:rgba(227,24,55,0.12);border:1px solid rgba(227,24,55,0.2);border-radius:6px;padding:2px 7px;font-size:9px;font-weight:700;color:#ff6b7a}
+.coupang-price{font-family:'Outfit';font-weight:900;color:var(--coupang)} .coupang-rocket{display:inline-flex;align-items:center;gap:2px;font-size:10px;color:#5c7cfa;font-weight:600}
+.stars{color:#fbbf24;font-size:10px;letter-spacing:-1px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideDown{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}} @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+// ═══════════════════════════════════════
+//  쿠팡 파트너스 설정
+// ═══════════════════════════════════════
+const COUPANG_AF_ID="YOUR_AF_CODE"; // ← 쿠팡 파트너스 AF 코드 입력
+function coupangLink(itemId,vendorItemId){
+  return`https://link.coupang.com/re/${COUPANG_AF_ID}?itemId=${itemId}&vendorItemId=${vendorItemId}&sourceType=srp&subId=carwashday`;}
+
+// ═══════════════════════════════════════
+const DAYS_KR=["일","월","화","수","목","금","토"];const today=new Date();today.setHours(0,0,0,0);
+let state={tab:"home",selectedDate:new Date(today),currentMonth:new Date(today),isPremium:false,showPremiumModal:false,showAddLog:false,
+  bannerIdx:0,showBanner:true,shopFilter:"전체",prodFilter:"전체",notification:null,selectedProduct:null,
+  newLog:{type:"셀프세차",cost:"",note:""},
+  washLogs:[{date:"2026-01-25",type:"셀프세차",cost:7000,note:"외부세차"},{date:"2026-01-10",type:"자동세차",cost:8000,note:""},{date:"2025-12-28",type:"손세차",cost:30000,note:"풀세차"},{date:"2025-12-15",type:"셀프세차",cost:5000,note:""},{date:"2025-11-30",type:"디테일링",cost:80000,note:"코팅"}]};
+
+const SHOPS=[
+  {name:"스파클 셀프세차장",type:"셀프",dist:"350m",rating:4.8,price:"5,000원~",discount:"앱 회원 20% 할인",img:"🏪",hours:"24시간",tags:["셀프","24시간"]},
+  {name:"프리미엄 손세차 강남점",type:"손세차",dist:"1.2km",rating:4.9,price:"25,000원~",discount:"첫 방문 30% 할인",img:"🧽",hours:"09:00-21:00",tags:["손세차","프리미엄"]},
+  {name:"워시킹 자동세차",type:"자동",dist:"800m",rating:4.5,price:"8,000원~",discount:"월정액 29,900원",img:"🚿",hours:"07:00-23:00",tags:["자동","월정액"]},
+  {name:"디테일링 마스터",type:"디테일링",dist:"2.5km",rating:4.9,price:"80,000원~",discount:"코팅 15% 할인",img:"✨",hours:"09:00-19:00",tags:["디테일링","코팅"]},
+  {name:"버블워시 판교점",type:"셀프",dist:"1.8km",rating:4.6,price:"6,000원~",discount:"야간할인 30%",img:"🫧",hours:"24시간",tags:["셀프","24시간"]}];
+
+const PRODUCTS=[
+  {name:"소낙스 글로스 샴푸 1L",price:"18,900",orig:"23,000",disc:18,rating:4.7,reviews:2847,img:"🧴",cat:"샴푸",badge:"BEST",rocket:true,
+   desc:"독일 No.1 세차 브랜드. 풍성한 거품으로 도장면 보호하며 세차. 중성 pH로 코팅 위에도 안전.",
+   specs:["용량: 1,000ml","pH: 중성","원산지: 독일"],itemId:"12345678",vendorItemId:"87654321"},
+  {name:"케미컬가이즈 워시미트",price:"15,500",orig:"19,900",disc:22,rating:4.8,reviews:1923,img:"🧤",cat:"워시미트",badge:"HOT",rocket:true,
+   desc:"초극세사 소재로 스크래치 없이 부드러운 세차. 양면 사용 가능.",
+   specs:["소재: 극세사","크기: 20×28cm","원산지: 미국"],itemId:"23456789",vendorItemId:"98765432"},
+  {name:"마프라 퀵 디테일러 500ml",price:"22,000",orig:"28,000",disc:21,rating:4.6,reviews:1245,img:"💦",cat:"디테일러",badge:"NEW",rocket:false,
+   desc:"세차 후 물기 제거와 동시에 광택. 스프레이 후 타월로 닦기만 하면 완료.",
+   specs:["용량: 500ml","타입: 스프레이","원산지: 이탈리아"],itemId:"34567890",vendorItemId:"09876543"},
+  {name:"카프로 세라믹 코팅제",price:"45,000",orig:"55,000",disc:18,rating:4.9,reviews:3156,img:"🛡️",cat:"코팅",badge:"PREMIUM",rocket:true,
+   desc:"SiO2 기반 세라믹 코팅. 발수 효과 최대 6개월 지속. DIY 시공 가능.",
+   specs:["용량: 100ml","성분: SiO2","지속: 약 6개월"],itemId:"45678901",vendorItemId:"10987654"},
+  {name:"극세사 드라잉 타월 3P",price:"12,900",orig:"16,000",disc:19,rating:4.5,reviews:5234,img:"🏳️",cat:"타월",badge:"BEST",rocket:true,
+   desc:"1200GSM 초고밀도 극세사. 한 장으로 차 한 대 물기 제거 가능.",
+   specs:["크기: 60×40cm 3장","밀도: 1200GSM"],itemId:"56789012",vendorItemId:"21098765"},
+  {name:"타이어 광택제 500ml",price:"9,900",orig:"13,000",disc:24,rating:4.4,reviews:987,img:"⚫",cat:"타이어",badge:"",rocket:false,
+   desc:"스프레이 타입으로 간편하게 타이어 광택. 자연스러운 무광 마감.",
+   specs:["용량: 500ml","마감: 무광","지속: 약 2주"],itemId:"67890123",vendorItemId:"32109876"},
+  {name:"철분제거제 스프레이",price:"16,500",orig:"20,000",disc:18,rating:4.7,reviews:2103,img:"🔴",cat:"클리너",badge:"HOT",rocket:true,
+   desc:"뿌리면 보라색으로 변하며 철분 오염을 녹여냄. 브레이크 더스트 제거 탁월.",
+   specs:["용량: 500ml","반응: 보라색 변색","pH: 중성"],itemId:"78901234",vendorItemId:"43210987"},
+  {name:"워터스팟 리무버",price:"19,800",orig:"25,000",disc:21,rating:4.5,reviews:1567,img:"💧",cat:"클리너",badge:"",rocket:false,
+   desc:"세차 후 남은 물 자국을 깔끔하게 제거. 유리면과 도장면 모두 사용 가능.",
+   specs:["용량: 500ml","사용: 유리/도장면"],itemId:"89012345",vendorItemId:"54321098"}];
+
+const BANNERS=[
+  {text:"🚗 인스타워시 출장세차 — 첫 이용 50% 할인!",bg:"linear-gradient(135deg,#6366f1,#8b5cf6)",cta:"바로가기 →"},
+  {text:"🧴 케미컬가이즈 봄맞이 세일 최대 40% OFF",bg:"linear-gradient(135deg,#f59e0b,#ef4444)",cta:"쇼핑하기 →"},
+  {text:"🛡️ 카프로 세라믹코팅 체험 이벤트!",bg:"linear-gradient(135deg,#06b6d4,#3b82f6)",cta:"참여하기 →"}];
+
+function genWeather(d){const s=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(),h=((s*2654435761)>>>0)%1000;
+  const c=[{type:"sunny",label:"맑음",icon:"☀️",rain:5},{type:"partly",label:"구름 조금",icon:"⛅",rain:12},{type:"cloudy",label:"흐림",icon:"☁️",rain:25},
+    {type:"rainy",label:"비",icon:"🌧️",rain:80},{type:"heavy",label:"폭우",icon:"⛈️",rain:95},{type:"snow",label:"눈",icon:"🌨️",rain:70},{type:"windy",label:"바람",icon:"💨",rain:15}];
+  let i=h<300?0:h<480?1:h<620?2:h<780?3:h<870?4:h<940?5:6;const m=d.getMonth();
+  if((m>=11||m<=1)&&h>600&&h<800)i=5;if(m>=6&&m<=8){if(h>500&&h<700)i=3;if(h>700&&h<800)i=4;}
+  const t=Math.round(m>=3&&m<=5?10+h%15:m>=6&&m<=8?24+h%12:m>=9&&m<=10?8+h%14:-5+h%12),hu=30+h%50,du=h%5;
+  const dL=["좋음","보통","나쁨","매우나쁨","위험"],dC=["#4ade80","#facc15","#fb923c","#f87171","#dc2626"];
+  return{...c[i],temp:t,humidity:hu,dustLevel:du,dustLabel:dL[Math.min(du,4)],dustColor:dC[Math.min(du,4)],rainChance:Math.min(100,c[i].rain+(h%15))};}
+function washScore(w){let s=100;if(w.rainChance>60)s-=60;else if(w.rainChance>30)s-=30;else if(w.rainChance>15)s-=10;
+  if(w.dustLevel>=3)s-=40;else if(w.dustLevel>=2)s-=20;else if(w.dustLevel>=1)s-=5;if(w.temp<0)s-=25;else if(w.temp<5)s-=10;if(w.humidity>70)s-=10;if(w.type==="windy")s-=5;return Math.max(0,Math.min(100,s));}
+function grade(s){if(s>=85)return{g:"최고",emoji:"🚗✨",color:"#22c55e",bg:"rgba(34,197,94,0.1)",msg:"세차하기 완벽한 날!"};
+  if(s>=65)return{g:"좋음",emoji:"🚙👍",color:"#3b82f6",bg:"rgba(59,130,246,0.1)",msg:"세차하기 좋은 날이에요."};
+  if(s>=45)return{g:"보통",emoji:"🚕",color:"#eab308",bg:"rgba(234,179,8,0.1)",msg:"세차해도 괜찮아요."};
+  if(s>=25)return{g:"비추천",emoji:"😥",color:"#f97316",bg:"rgba(249,115,22,0.1)",msg:"세차를 미루는 게 좋겠어요."};
+  return{g:"금지",emoji:"🚫",color:"#ef4444",bg:"rgba(239,68,68,0.1)",msg:"오늘은 세차하지 마세요!"};}
+function dayColor(d,y,m){const s=washScore(genWeather(new Date(y,m,d)));if(s>=85)return"rgba(34,197,94,0.4)";if(s>=65)return"rgba(59,130,246,0.3)";if(s>=45)return"rgba(234,179,8,0.25)";if(s>=25)return"rgba(249,115,22,0.25)";return"rgba(239,68,68,0.25)";}
+function notify(msg){state.notification=msg;render();setTimeout(()=>{state.notification=null;render();},2400);}
+function setTab(t){state.tab=t;render();window.scrollTo(0,0);}
+function ds(d){return d.toDateString();}
+function starsHTML(r){return'★'.repeat(Math.floor(r))+(r%1>=0.5?'½':'')+'☆'.repeat(5-Math.ceil(r));}
+function ringSVG(score,size=110){const g=grade(score),r=(size-12)/2,c=2*Math.PI*r,off=c-(score/100)*c;
+  return`<div class="ring-wrap" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}" style="transform:rotate(-90deg)">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="7"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${g.color}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" style="transition:stroke-dashoffset 0.8s ease"/>
+    </svg><div class="center"><span class="score-num" style="font-size:${size*0.24}px;color:${g.color}">${score}</span><span class="score-max">/ 100</span></div></div>`;}
+function goToCoupang(idx){const p=PRODUCTS[idx];const url=coupangLink(p.itemId,p.vendorItemId);
+  if(window.NativeBridge&&window.NativeBridge.isNativeApp){window.NativeBridge.openURL(url);}else{window.open(url,'_blank');}}
+function openProduct(idx){state.selectedProduct=idx;render();}
+function closeProduct(){state.selectedProduct=null;render();}
+
+function render(){
+  const S=state,w=genWeather(S.selectedDate),sc=washScore(w),gr=grade(sc);
+  const lastW=S.washLogs[0],daysSince=lastW?Math.floor((today-new Date(lastW.date))/864e5):null;
+  const fc=[];for(let i=0;i<(S.isPremium?14:7);i++){const d=new Date(today);d.setDate(d.getDate()+i);const ww=genWeather(d);fc.push({date:d,score:washScore(ww),weather:ww});}
+  const best=fc.reduce((a,b)=>a.score>b.score?a:b);
+  const isGoodDay=sc>=65;
+  let html='';
+
+  // HOME
+  if(S.tab==="home"){
+    html+=`<div class="page"><div style="text-align:center;padding:8px 0 14px">
+      <div style="font-size:10px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;font-family:Outfit">Car Wash Advisor</div>
+      <h1 style="font-size:24px;font-weight:900;margin:4px 0 0;background:linear-gradient(135deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🚿 세차의 날</h1></div>`;
+    if(S.showBanner&&!S.isPremium){const b=BANNERS[S.bannerIdx%BANNERS.length];
+      html+=`<div class="banner-ad" style="background:${b.bg}" onclick="notify('광고 이동')"><div class="flex-b">
+        <div style="font-size:13px;font-weight:600;color:#fff;flex:1;line-height:1.4">${b.text}</div>
+        <div style="background:rgba(255,255,255,0.25);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;margin-left:10px">${b.cta}</div></div>
+        <div style="position:absolute;top:4px;right:8px;font-size:9px;color:rgba(255,255,255,0.35);cursor:pointer" onclick="event.stopPropagation();state.showBanner=false;render();">광고 ✕</div></div>`;}
+    if(!S.isPremium){html+=`<div class="card" style="background:linear-gradient(135deg,rgba(234,179,8,0.1),rgba(245,158,11,0.05));border-color:rgba(234,179,8,0.2);cursor:pointer" onclick="state.showPremiumModal=true;render();">
+      <div class="flex-c" style="gap:12px"><span style="font-size:26px">👑</span><div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--amber)">PRO 멤버십</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.5">광고 제거 · 14일 예보 · 알림</div></div>
+      <div style="background:#f59e0b;color:#000;font-weight:800;border-radius:10px;padding:8px 12px;font-size:12px">₩2,900/월</div></div></div>`;}
+    html+=`<div class="card" style="background:${gr.bg};border-color:${gr.color}22;padding:18px"><div class="flex-c" style="gap:14px">${ringSVG(sc)}<div style="flex:1">
+      <div style="font-size:11px;color:var(--text2);margin-bottom:3px">${ds(S.selectedDate)===ds(today)?"오늘의 세차 점수":`${S.selectedDate.getMonth()+1}/${S.selectedDate.getDate()} 세차 점수`}</div>
+      <div class="flex-c" style="gap:8px;margin-bottom:4px"><span style="font-size:22px">${gr.emoji}</span><span style="font-size:18px;font-weight:800;color:${gr.color}">${gr.g}</span></div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.5">${gr.msg}</p></div></div></div>`;
+    const wxI=[{l:"날씨",v:`${w.icon} ${w.label}`},{l:"기온",v:`${w.temp}°C`},{l:"강수확률",v:`💧 ${w.rainChance}%`,c:w.rainChance>40?"var(--red)":""},
+      {l:"습도",v:`${w.humidity}%`},{l:"미세먼지",v:w.dustLabel,c:w.dustColor},{l:"세차 후 비",v:w.rainChance>30?"⚠️ 주의":"✅ 안전",c:w.rainChance>30?"var(--red)":"var(--green)"}];
+    html+=`<div class="grid-3" style="margin-bottom:12px">${wxI.map(it=>`<div class="wx-mini"><div class="label">${it.l}</div><div class="val" style="color:${it.c||'var(--text)'}">${it.v}</div></div>`).join('')}</div>`;
+    if(daysSince!==null){const wn=daysSince>14;html+=`<div class="card flex-b" style="padding:12px 16px;${wn?'background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.12)':''}">
+      <div><div style="font-size:11px;color:var(--text3)">마지막 세차</div><div style="font-size:16px;font-weight:800;color:${wn?'var(--red)':'var(--text)'}">${daysSince}일 전</div></div>
+      <div style="text-align:right"><div style="font-size:10px;color:var(--text3)">${lastW.type}</div>${wn?'<div style="font-size:11px;color:var(--red);font-weight:600;margin-top:2px">세차가 필요해요! 🚨</div>':''}</div></div>`;}
+    html+=`<div class="card" style="background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(59,130,246,0.04));border-color:rgba(34,197,94,0.1)">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:5px">📅 베스트 세차일</div><div class="flex-b"><div>
+        <span style="font-size:16px;font-weight:800;color:var(--green)">${ds(best.date)===ds(today)?"오늘!":`${DAYS_KR[best.date.getDay()]}요일 (${best.date.getMonth()+1}/${best.date.getDate()})`}</span>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">${best.weather.icon} ${best.weather.label} · ${best.weather.temp}°C · ${best.score}점</div>
+      </div><div style="background:#22c55e;color:#000;font-weight:800;border-radius:10px;padding:6px 12px;font-size:12px">추천 ✓</div></div></div>`;
+    html+=`<div style="margin-bottom:14px"><div style="font-size:11px;color:var(--text3);margin-bottom:8px">향후 ${S.isPremium?14:7}일 세차 지수</div>
+      <div class="forecast-bar">${fc.map((it,i)=>{const g2=grade(it.score),h=Math.max(14,(it.score/100)*60),sel=ds(it.date)===ds(S.selectedDate);
+        return`<div style="flex:${S.isPremium?'0 0 28px':'1'};display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;opacity:${sel?1:0.6}" onclick="state.selectedDate=new Date(${it.date.getTime()});render();">
+          <span style="font-size:8px;color:${g2.color};font-weight:700">${it.score}</span>
+          <div style="width:100%;min-width:14px;height:${h}px;border-radius:4px;background:linear-gradient(to top,${g2.color},${g2.color}88);${sel?'border:2px solid #fff':''}"></div>
+          <span style="font-size:8px;color:var(--text3)">${i===0?"오늘":DAYS_KR[it.date.getDay()]}</span></div>`;}).join('')}</div></div>`;
+    // 쿠팡 추천 상품
+    html+=`<div style="margin-bottom:14px"><div class="flex-b" style="margin-bottom:8px">
+      <div><span style="font-size:12px;font-weight:700">${isGoodDay?'🔥 오늘 세차 준비물':'🛒 인기 세차용품'}</span><span class="coupang-tag" style="margin-left:6px">쿠팡</span></div>
+      <span style="font-size:10px;color:var(--blue);cursor:pointer" onclick="setTab('shop')">전체보기 →</span></div>
+      ${isGoodDay?`<div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.1);border-radius:10px;padding:8px 12px;margin-bottom:8px;font-size:11px;color:var(--green)">✨ 세차 점수 ${sc}점! 지금 준비하세요</div>`:''}
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">${PRODUCTS.slice(0,4).map((p,i)=>
+        `<div style="min-width:130px;background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--card-b);cursor:pointer;flex-shrink:0" onclick="openProduct(${i})">
+          <div style="font-size:28px;margin-bottom:4px;text-align:center">${p.img}</div>
+          <div style="font-size:10px;color:var(--text2);line-height:1.3;margin-bottom:3px;height:26px;overflow:hidden">${p.name}</div>
+          <div class="flex-c" style="gap:3px;margin-bottom:2px"><span class="coupang-price" style="font-size:14px">₩${p.price}</span><span style="font-size:9px;color:var(--red);font-weight:800">${p.disc}%</span></div>
+          ${p.rocket?'<div class="coupang-rocket">🚀 로켓배송</div>':''}</div>`).join('')}</div>
+      <div style="text-align:center;margin-top:6px;font-size:9px;color:var(--text3)">쿠팡 파트너스 활동으로 일정액의 수수료를 제공받습니다</div></div></div>`;
+  }
+
+  // CALENDAR
+  if(S.tab==="calendar"){const y=S.currentMonth.getFullYear(),m=S.currentMonth.getMonth(),fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate();
+    html+=`<div class="page"><h2 style="font-size:18px;font-weight:800;margin:6px 0 14px">📅 세차 캘린더</h2>
+      <div class="card" style="padding:16px"><div class="flex-b" style="margin-bottom:12px">
+        <span style="font-size:18px;cursor:pointer;color:var(--text2)" onclick="state.currentMonth=new Date(${y},${m-1},1);render();">‹</span>
+        <span style="font-size:15px;font-weight:700">${y}년 ${m+1}월</span>
+        <span style="font-size:18px;cursor:pointer;color:var(--text2)" onclick="state.currentMonth=new Date(${y},${m+1},1);render();">›</span></div>
+        <div class="cal-grid">${DAYS_KR.map(d=>`<div style="font-size:9px;color:var(--text3);padding-bottom:3px">${d}</div>`).join('')}
+          ${(()=>{let c='';for(let i=0;i<fd;i++)c+='<div></div>';for(let d=1;d<=dim;d++){const dt=new Date(y,m,d),iS=ds(dt)===ds(S.selectedDate),iT=ds(dt)===ds(today);
+            c+=`<div class="cal-day${iT?' today':''}${iS?' selected':''}" style="background:${iS?'':dayColor(d,y,m)};color:rgba(255,255,255,0.7)" onclick="state.selectedDate=new Date(${y},${m},${d});render();">${d}</div>`;}return c;})()}</div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap">
+          ${[{l:"최고",c:"rgba(34,197,94,0.4)"},{l:"좋음",c:"rgba(59,130,246,0.3)"},{l:"보통",c:"rgba(234,179,8,0.25)"},{l:"비추천",c:"rgba(249,115,22,0.25)"},{l:"금지",c:"rgba(239,68,68,0.25)"}].map(it=>`<div class="flex-c" style="gap:3px"><div style="width:8px;height:8px;border-radius:2px;background:${it.c}"></div><span style="font-size:9px;color:var(--text3)">${it.l}</span></div>`).join('')}</div></div>
+      <div class="card" style="background:${gr.bg};border-color:${gr.color}22;margin-top:8px">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:6px">${S.selectedDate.getMonth()+1}월 ${S.selectedDate.getDate()}일 (${DAYS_KR[S.selectedDate.getDay()]})</div>
+        <div class="flex-c" style="gap:10px">${ringSVG(sc,65)}<div><div style="font-size:16px;font-weight:800;color:${gr.color}">${gr.g} ${gr.emoji}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">${w.icon} ${w.label} · ${w.temp}°C · 강수 ${w.rainChance}%</div></div></div></div></div>`;}
+
+  // SHOPS
+  if(S.tab==="shops"){const fl=S.shopFilter==="전체"?SHOPS:SHOPS.filter(s=>s.tags.includes(S.shopFilter));
+    html+=`<div class="page"><h2 style="font-size:18px;font-weight:800;margin:6px 0 14px">📍 주변 세차장</h2>
+      <div class="chips">${["전체","셀프","자동","손세차","프리미엄","디테일링","24시간","월정액"].map(f=>`<div class="chip${S.shopFilter===f?' active':''}" onclick="state.shopFilter='${f}';render();">${f}</div>`).join('')}</div>
+      ${fl.map(s=>`<div class="card" style="cursor:pointer" onclick="notify('📞 ${s.name} 전화 연결')"><div class="flex-c" style="gap:10px"><div style="font-size:32px">${s.img}</div><div style="flex:1">
+        <div class="flex-b"><span style="font-size:14px;font-weight:700">${s.name}</span><span style="font-size:11px;color:var(--text3)">${s.dist}</span></div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">⭐ ${s.rating} · ${s.type} · ${s.hours}</div>
+        <div style="font-size:13px;font-weight:700;margin-top:3px">${s.price}</div>
+        ${s.discount?`<div style="margin-top:5px;background:rgba(244,114,182,0.08);border:1px solid rgba(244,114,182,0.12);border-radius:7px;padding:4px 10px;font-size:11px;color:var(--pink);font-weight:600;display:inline-block">🎫 ${s.discount}</div>`:''}</div></div></div>`).join('')}</div>`;}
+
+  // SHOP (쿠팡)
+  if(S.tab==="shop"){const fl=S.prodFilter==="전체"?PRODUCTS:PRODUCTS.filter(p=>p.cat===S.prodFilter);
+    html+=`<div class="page"><div class="flex-b" style="margin:6px 0 4px"><div><h2 style="font-size:18px;font-weight:800;display:inline">🛒 세차용품</h2>
+      <span class="coupang-tag" style="margin-left:6px">쿠팡 파트너스</span></div></div>
+      <p style="font-size:11px;color:var(--text3);margin:4px 0 12px">최저가 · 로켓배송 · 구매 시 앱 지원에 도움이 됩니다</p>
+      <div class="chips">${["전체","샴푸","워시미트","디테일러","코팅","타월","타이어","클리너"].map(f=>`<div class="chip${S.prodFilter===f?' active':''}" onclick="state.prodFilter='${f}';render();">${f}</div>`).join('')}</div>
+      <div class="grid-2">${fl.map(p=>{const ri=PRODUCTS.indexOf(p);
+        return`<div class="prod-card" onclick="openProduct(${ri})">
+          ${p.badge?`<div class="prod-badge" style="background:${p.badge==="PREMIUM"?"rgba(245,158,11,0.25);color:var(--amber)":"rgba(227,24,55,0.15);color:#ff6b7a"}">${p.badge}</div>`:''}
+          <div style="font-size:32px;margin-bottom:6px;text-align:center">${p.img}</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.3;margin-bottom:4px;min-height:28px">${p.name}</div>
+          <div class="flex-c" style="gap:4px;margin-bottom:2px"><span class="coupang-price" style="font-size:15px">₩${p.price}</span></div>
+          <div class="flex-c" style="gap:4px"><span style="font-size:9px;color:var(--text3);text-decoration:line-through">₩${p.orig}</span><span style="font-size:10px;color:var(--red);font-weight:800">${p.disc}%↓</span></div>
+          <div style="font-size:10px;color:var(--text2);margin-top:3px"><span class="stars">${starsHTML(p.rating)}</span> ${p.rating} (${p.reviews.toLocaleString()})</div>
+          ${p.rocket?'<div class="coupang-rocket" style="margin-top:3px">🚀 로켓배송</div>':''}
+          <div style="margin-top:6px;background:var(--coupang);text-align:center;border-radius:7px;padding:6px 0;font-size:11px;font-weight:700;color:#fff">쿠팡에서 보기</div></div>`;}).join('')}</div>
+      <div style="text-align:center;padding:14px 0;font-size:9px;color:var(--text3);line-height:1.6">쿠팡 파트너스 활동으로 일정액의 수수료를 제공받습니다</div></div>`;}
+
+  // MY CAR
+  if(S.tab==="mycar"){const total=S.washLogs.reduce((a,b)=>a+b.cost,0);
+    html+=`<div class="page"><h2 style="font-size:18px;font-weight:800;margin:6px 0 14px">🚗 내 차 관리</h2>
+      <div class="grid-3" style="margin-bottom:14px">
+        <div class="card"><div style="font-size:9px;color:var(--text3)">세차 횟수</div><div style="font-size:20px;font-weight:800;color:var(--blue);font-family:Outfit">${S.washLogs.length}회</div></div>
+        <div class="card"><div style="font-size:9px;color:var(--text3)">총 비용</div><div style="font-size:14px;font-weight:800;color:var(--pink);font-family:Outfit">₩${total.toLocaleString()}</div></div>
+        <div class="card"><div style="font-size:9px;color:var(--text3)">마지막</div><div style="font-size:14px;font-weight:800;color:${daysSince>14?'var(--red)':'var(--green)'};font-family:Outfit">${daysSince??"-"}일 전</div></div></div>
+      <button class="btn btn-blue" style="margin-bottom:10px" onclick="state.showAddLog=!state.showAddLog;render();">✏️ 세차 기록 추가</button>
+      ${S.showAddLog?`<div class="card"><div class="chips" style="margin-bottom:8px">${["셀프세차","자동세차","손세차","출장세차","디테일링"].map(t=>`<div class="chip${S.newLog.type===t?' active':''}" onclick="state.newLog.type='${t}';render();">${t}</div>`).join('')}</div>
+        <input type="number" placeholder="비용 (원)" value="${S.newLog.cost}" oninput="state.newLog.cost=this.value" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--card-b);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;margin-bottom:6px"/>
+        <input placeholder="메모 (선택)" value="${S.newLog.note}" oninput="state.newLog.note=this.value" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--card-b);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;margin-bottom:8px"/>
+        <button class="btn btn-green" onclick="addLog()">저장</button></div>`:''}
+      <div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 세차 히스토리</div>
+      ${S.washLogs.map(l=>`<div class="card flex-b" style="padding:10px 14px"><div><div style="font-size:13px;font-weight:600">${l.type}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px">${l.date}${l.note?' · '+l.note:''}</div></div>
+        <div style="font-size:14px;font-weight:800;color:var(--pink);font-family:Outfit">₩${l.cost.toLocaleString()}</div></div>`).join('')}</div>`;}
+
+  // PRODUCT DETAIL POPUP
+  if(S.selectedProduct!==null){const p=PRODUCTS[S.selectedProduct];
+    html+=`<div class="modal-overlay" onclick="closeProduct()"><div class="modal-sheet" onclick="event.stopPropagation()">
+      <div style="text-align:center;margin-bottom:14px"><div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto"></div></div>
+      <div style="text-align:center;margin-bottom:16px"><div style="font-size:56px;margin-bottom:10px">${p.img}</div>
+        ${p.badge?`<span style="display:inline-block;background:rgba(227,24,55,0.15);color:#ff6b7a;font-size:11px;font-weight:800;padding:3px 10px;border-radius:6px;margin-bottom:8px">${p.badge}</span>`:''}
+        <h3 style="font-size:17px;font-weight:800;line-height:1.4">${p.name}</h3></div>
+      <div style="background:rgba(227,24,55,0.06);border:1px solid rgba(227,24,55,0.12);border-radius:14px;padding:14px;margin-bottom:14px">
+        <div class="flex-b"><div><span style="font-size:10px;color:var(--text3);text-decoration:line-through">정가 ₩${p.orig}</span>
+          <span style="font-size:12px;color:var(--red);font-weight:800;margin-left:6px">${p.disc}% 할인</span></div>
+          ${p.rocket?'<div class="coupang-rocket" style="font-size:12px">🚀 로켓배송</div>':'<div style="font-size:11px;color:var(--text3)">📦 판매자 배송</div>'}</div>
+        <div style="margin-top:6px"><span class="coupang-price" style="font-size:28px">₩${p.price}</span></div></div>
+      <div class="flex-c" style="gap:8px;margin-bottom:14px;justify-content:center"><span class="stars" style="font-size:14px">${starsHTML(p.rating)}</span>
+        <span style="font-size:13px;font-weight:700">${p.rating}</span><span style="font-size:12px;color:var(--text2)">리뷰 ${p.reviews.toLocaleString()}개</span></div>
+      <div style="margin-bottom:14px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">📝 상품 설명</div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.7">${p.desc}</p></div>
+      <div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">📋 상세 정보</div>
+        ${p.specs.map(s=>`<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:11px;color:var(--text2)">${s}</div>`).join('')}</div>
+      <button class="btn btn-coupang" onclick="goToCoupang(${S.selectedProduct})">🔗 쿠팡에서 최저가로 구매하기</button>
+      <button class="btn btn-ghost" style="margin-top:8px;font-size:12px" onclick="goToCoupang(${S.selectedProduct})">쿠팡 앱에서 열기 →</button>
+      <div style="text-align:center;margin-top:10px;font-size:9px;color:var(--text3);line-height:1.6">쿠팡 파트너스 활동으로 일정액의 수수료를 제공받습니다</div>
+      <button class="btn" style="background:transparent;color:var(--text3);font-size:12px;margin-top:8px" onclick="closeProduct()">닫기</button></div></div>`;}
+
+  // PREMIUM MODAL
+  if(S.showPremiumModal){html+=`<div class="modal-overlay" style="align-items:center" onclick="state.showPremiumModal=false;render();">
+    <div class="modal-box" onclick="event.stopPropagation()"><div style="text-align:center;margin-bottom:16px"><span style="font-size:40px">👑</span>
+      <h3 style="font-size:20px;font-weight:800;color:var(--amber);margin:8px 0 4px">PRO 멤버십</h3></div>
+      ${[{i:"🚫",t:"모든 광고 제거"},{i:"📅",t:"14일 세차 예보"},{i:"🔔",t:"푸시 알림"},{i:"🌫️",t:"미세먼지 예측"},{i:"📊",t:"세차 리포트"},{i:"🎫",t:"추가 할인"},{i:"🛒",t:"무료배송"},{i:"⚡",t:"우선 지원"}].map(it=>
+        `<div class="flex-c" style="gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="font-size:16px">${it.i}</span><span style="font-size:13px">${it.t}</span></div>`).join('')}
+      <div style="margin-top:16px"><button class="btn btn-amber" style="font-size:15px;padding:13px" onclick="state.isPremium=true;state.showPremiumModal=false;state.showBanner=false;notify('🎉 PRO!');render();">월 ₩2,900 시작</button>
+      <div style="text-align:center;margin-top:6px;font-size:11px;color:var(--text3)">연간 ₩24,900 (30% 할인)</div>
+      <button class="btn" style="background:transparent;color:var(--text3);font-size:12px;margin-top:6px" onclick="state.showPremiumModal=false;render();">나중에</button></div></div></div>`;}
+
+  if(S.notification)html+=`<div class="notif">${S.notification}</div>`;
+  if(S.isPremium)html+=`<div class="pro-badge">👑 PRO</div>`;
+  html+=`<div class="tab-bar">${[{id:"home",icon:"🏠",l:"홈"},{id:"calendar",icon:"📅",l:"달력"},{id:"shops",icon:"📍",l:"세차장"},{id:"shop",icon:"🛒",l:"용품샵"},{id:"mycar",icon:"🚗",l:"내차"}].map(t=>
+    `<div class="tab-item${S.tab===t.id?' active':''}" onclick="setTab('${t.id}')"><span class="icon">${t.icon}</span><span>${t.l}</span></div>`).join('')}</div>`;
+  document.getElementById('app').innerHTML=html;}
+
+function addLog(){if(!state.newLog.cost)return;state.washLogs.unshift({date:today.toISOString().split('T')[0],type:state.newLog.type,cost:parseInt(state.newLog.cost),note:state.newLog.note});
+  state.newLog={type:"셀프세차",cost:"",note:""};state.showAddLog=false;notify("✅ 저장 완료!");}
+setInterval(()=>{if(!state.isPremium){state.bannerIdx++;if(state.showBanner&&state.tab==="home")render();}},5000);
+render();
+</script>
+</body>
+</html>
