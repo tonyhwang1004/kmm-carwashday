@@ -3,105 +3,164 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
-<title>세차의 날 | CarWash Day</title>
+<title>🚿 세차의 날 — 오늘 세차해도 될까?</title>
+<meta name="description" content="실시간 날씨 기반 세차 점수 확인! 미세먼지, 강수확률, 기온을 분석해 최적의 세차 타이밍을 알려드립니다."/>
+<meta property="og:title" content="🚿 세차의 날 — 오늘 세차해도 될까?"/>
+<meta property="og:description" content="날씨 기반 세차 점수를 무료로 확인하세요. 7일 예보, 세차장 찾기, 용품 추천까지!"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;800;900&family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;800;900&family=Outfit:wght@300;400;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#06080f;--card:rgba(255,255,255,0.03);--card-b:rgba(255,255,255,0.06);--text:#e2e8f0;--text2:rgba(255,255,255,0.5);--text3:rgba(255,255,255,0.25);--blue:#60a5fa;--green:#4ade80;--pink:#f472b6;--amber:#fbbf24;--red:#f87171;--purple:#a78bfa;--coupang:#e31837}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);font-family:'Noto Sans KR','Outfit',sans-serif;color:var(--text);overflow-x:hidden}
-::-webkit-scrollbar{display:none} input::placeholder{color:var(--text3)}
-.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;background:linear-gradient(170deg,#06080f 0%,#0d1225 30%,#0a1628 60%,#06080f 100%)}
+:root{--bg:#04060e;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.06);--text:#e8ecf4;--text2:rgba(255,255,255,0.55);--text3:rgba(255,255,255,0.25);--blue:#60a5fa;--green:#4ade80;--pink:#f472b6;--amber:#fbbf24;--red:#f87171;--purple:#a78bfa;--coupang:#e31837;--cyan:#22d3ee;--card:rgba(255,255,255,0.03);--card-b:rgba(255,255,255,0.06)}
+body{background:var(--bg);font-family:'Noto Sans KR','Outfit',sans-serif;color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{display:none}input::placeholder{color:var(--text3)}
+
+.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;background:linear-gradient(170deg,#04060e 0%,#0d1225 30%,#0a1628 60%,#04060e 100%)}
 .page{padding:16px 16px 90px;position:relative;z-index:1}
+
+/* Cards */
 .card{background:var(--card);border:1px solid var(--card-b);border-radius:16px;padding:16px;margin-bottom:12px;backdrop-filter:blur(12px);transition:transform 0.2s}
 .card:active{transform:scale(0.985)}
-.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(6,8,15,0.92);backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,0.05);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+
+/* Tab Bar */
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(4,6,14,0.94);backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,0.05);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0 8px;cursor:pointer;color:var(--text3);font-size:10px;transition:all 0.2s}
-.tab-item.active{color:var(--blue)} .tab-item .icon{font-size:20px;transition:transform 0.2s} .tab-item.active .icon{transform:scale(1.15)}
-.ring-wrap{position:relative;flex-shrink:0} .ring-wrap .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ring-wrap .score-num{font-family:'Outfit';font-weight:900} .ring-wrap .score-max{font-size:10px;color:var(--text3)}
+.tab-item.active{color:var(--blue)}.tab-item .icon{font-size:20px;transition:transform 0.2s}.tab-item.active .icon{transform:scale(1.15)}
+
+/* Ring */
+.ring-wrap{position:relative;flex-shrink:0}
+.ring-wrap .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-wrap .score-num{font-family:'Outfit';font-weight:900}
+.ring-wrap .score-max{font-size:10px;color:var(--text3)}
+
+/* Chips */
 .chips{display:flex;gap:5px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
 .chip{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;background:rgba(255,255,255,0.04);color:var(--text2);border:1px solid rgba(255,255,255,0.06);transition:all 0.2s}
 .chip.active{background:rgba(96,165,250,0.15);color:var(--blue);border-color:rgba(96,165,250,0.25)}
+
+/* Buttons */
 .btn{width:100%;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s}
-.btn:active{transform:scale(0.97)} .btn-blue{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff} .btn-green{background:linear-gradient(135deg,#22c55e,#10b981);color:#fff}
-.btn-amber{background:linear-gradient(135deg,#f59e0b,#f97316);color:#000} .btn-ghost{background:rgba(255,255,255,0.05);color:var(--text2);border:1px solid var(--card-b)}
+.btn:active{transform:scale(0.97)}
+.btn-blue{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff}
+.btn-green{background:linear-gradient(135deg,#22c55e,#10b981);color:#fff}
+.btn-amber{background:linear-gradient(135deg,#f59e0b,#f97316);color:#000}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--text2);border:1px solid var(--card-b)}
 .btn-coupang{background:linear-gradient(135deg,#e31837,#ff4154);color:#fff;font-size:15px;padding:14px;box-shadow:0 4px 20px rgba(227,24,55,0.3)}
+
+/* Banner */
 .banner-ad{border-radius:14px;padding:14px 16px;margin-bottom:14px;cursor:pointer;position:relative}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px} .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.flex-c{display:flex;align-items:center} .flex-b{display:flex;align-items:center;justify-content:space-between}
+
+/* Grids */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.flex-c{display:flex;align-items:center}
+.flex-b{display:flex;align-items:center;justify-content:space-between}
+
+/* Weather mini */
 .wx-mini{background:rgba(255,255,255,0.03);border-radius:10px;padding:8px 10px;border:1px solid rgba(255,255,255,0.03)}
-.wx-mini .label{font-size:9px;color:var(--text3);margin-bottom:2px} .wx-mini .val{font-size:13px;font-weight:600}
+.wx-mini .label{font-size:9px;color:var(--text3);margin-bottom:2px}
+.wx-mini .val{font-size:13px;font-weight:600}
+
+/* Products */
 .prod-card{background:var(--card);border-radius:14px;padding:12px;border:1px solid var(--card-b);cursor:pointer;position:relative;transition:transform 0.15s}
-.prod-card:active{transform:scale(0.96)} .prod-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:800}
+.prod-card:active{transform:scale(0.96)}
+.prod-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:800}
+
+/* Forecast */
 .forecast-bar{display:flex;gap:3px;align-items:flex-end;height:70px;overflow-x:auto}
+
+/* Calendar */
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
 .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:7px;font-size:11px;cursor:pointer;transition:all 0.15s;border:1px solid transparent}
-.cal-day.today{border:2px solid rgba(255,255,255,0.35)!important} .cal-day.selected{background:rgba(255,255,255,0.2)!important;font-weight:800;color:#fff!important}
+.cal-day.today{border:2px solid rgba(255,255,255,0.35)!important}
+.cal-day.selected{background:rgba(255,255,255,0.2)!important;font-weight:800;color:#fff!important}
+
+/* Modals */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);z-index:200;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn 0.25s ease}
 .modal-sheet{background:linear-gradient(160deg,#141833,#0f172a);border-radius:22px 22px 0 0;padding:24px;max-width:480px;width:100%;border:1px solid var(--card-b);border-bottom:none;max-height:85vh;overflow-y:auto;animation:slideUp 0.3s ease}
 .modal-box{background:linear-gradient(160deg,#1e1b4b,#0f172a);border-radius:22px;padding:24px;max-width:360px;width:100%;border:1px solid rgba(234,179,8,0.2);max-height:85vh;overflow-y:auto}
+
+/* Notifications */
 .notif{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(20,24,51,0.95);backdrop-filter:blur(12px);border:1px solid var(--card-b);border-radius:12px;padding:10px 18px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:slideDown 0.3s ease}
+
+/* Badges */
 .pro-badge{position:fixed;top:10px;right:14px;background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.3);border-radius:16px;padding:3px 10px;font-size:10px;font-weight:800;color:var(--amber);z-index:50}
 .coupang-tag{display:inline-flex;align-items:center;gap:3px;background:rgba(227,24,55,0.12);border:1px solid rgba(227,24,55,0.2);border-radius:6px;padding:2px 7px;font-size:9px;font-weight:700;color:#ff6b7a}
-.coupang-price{font-family:'Outfit';font-weight:900;color:var(--coupang)} .coupang-rocket{display:inline-flex;align-items:center;gap:2px;font-size:10px;color:#5c7cfa;font-weight:600}
+.coupang-price{font-family:'Outfit';font-weight:900;color:var(--coupang)}
+.coupang-rocket{display:inline-flex;align-items:center;gap:2px;font-size:10px;color:#5c7cfa;font-weight:600}
 .stars{color:#fbbf24;font-size:10px;letter-spacing:-1px}
 .live-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.25);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--green)}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
 .location-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.15);border-radius:8px;padding:3px 10px;font-size:10px;color:var(--blue);cursor:pointer}
 .loading-spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto}
-.api-key-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--card-b);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--text);outline:none;font-family:inherit;margin-bottom:8px}
-.api-key-input:focus{border-color:var(--blue)}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideDown{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}} @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}} @keyframes spin{to{transform:rotate(360deg)}}
+
+/* Share */
+.share-section{text-align:center;padding:16px 0;margin-bottom:12px}
+.share-btns{display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.share-btn{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all 0.15s}
+.share-btn:active{transform:scale(0.95)}
+.share-kakao{background:#fee500;color:#191919}
+.share-copy{background:rgba(255,255,255,0.08);color:var(--text);border:1px solid var(--border)}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideDown{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 <div class="app" id="app"></div>
 <script>
-// ═══════════════════════════════════════
-//  실제 날씨 API 연동 + 쿠팡 파트너스
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════
+//  세차의 날 — 실시간 날씨 자동 연동 버전
+//  API 키 내장 + GPS 자동 감지
+//  사용자 설정 불필요, 링크 열면 바로 사용!
+// ═══════════════════════════════════════════════
 
-const DAYS_KR=["일","월","화","수","목","금","토"];
-const today=new Date();today.setHours(0,0,0,0);
+// ─── 내장 API 키 (OpenWeatherMap 무료) ───
+const OWM_API_KEY = '48a17981d0bddcf6a40411c35be74e03';
 
-// ═══ API 키 관리 ═══
-const STORAGE_KEY = 'carwash_owm_key';
-const LOC_KEY = 'carwash_location';
+// ─── 기본 상수 ───
+const DAYS_KR = ["일","월","화","수","목","금","토"];
+const today = new Date(); today.setHours(0,0,0,0);
 
-function getSavedApiKey() { return localStorage.getItem(STORAGE_KEY) || ''; }
-function saveApiKey(key) { localStorage.setItem(STORAGE_KEY, key); }
-function getSavedLocation() { try { return JSON.parse(localStorage.getItem(LOC_KEY)); } catch(e) { return null; } }
-function saveLocation(loc) { localStorage.setItem(LOC_KEY, JSON.stringify(loc)); }
-
-let state={
-  tab:"home",selectedDate:new Date(today),currentMonth:new Date(today),
-  isPremium:false,showPremiumModal:false,showAddLog:false,showApiSetup:false,
-  bannerIdx:0,showBanner:true,shopFilter:"전체",prodFilter:"전체",
-  notification:null,selectedProduct:null,
-  newLog:{type:"셀프세차",cost:"",note:""},
-  // 날씨 관련
-  apiKey: getSavedApiKey(),
-  location: getSavedLocation(), // {lat, lon, name}
-  weatherData: null,       // 현재 날씨
-  forecastData: null,      // 5일 예보
-  airData: null,           // 대기질
-  weatherLoading: false,
+// ─── 앱 상태 ───
+let state = {
+  tab: "home",
+  selectedDate: new Date(today),
+  currentMonth: new Date(today),
+  isPremium: false,
+  showPremiumModal: false,
+  showAddLog: false,
+  bannerIdx: 0,
+  showBanner: true,
+  shopFilter: "전체",
+  prodFilter: "전체",
+  notification: null,
+  selectedProduct: null,
+  newLog: { type:"셀프세차", cost:"", note:"" },
+  // 위치 & 날씨 (자동 로드)
+  location: null,
+  weatherData: null,
+  forecastData: null,
+  forecastDays: null,
+  airData: null,
+  weatherLoading: true,
   weatherError: null,
   lastFetch: null,
   // 세차 기록
-  washLogs:[
-    {date:"2026-01-25",type:"셀프세차",cost:7000,note:"외부세차"},
-    {date:"2026-01-10",type:"자동세차",cost:8000,note:""},
+  washLogs: [
+    {date:"2026-02-01",type:"셀프세차",cost:7000,note:"외부세차"},
+    {date:"2026-01-18",type:"자동세차",cost:8000,note:""},
     {date:"2025-12-28",type:"손세차",cost:30000,note:"풀세차"},
     {date:"2025-12-15",type:"셀프세차",cost:5000,note:""},
     {date:"2025-11-30",type:"디테일링",cost:80000,note:"코팅"}
   ]
 };
 
-// ═══ 세차장/상품 데이터 (기존과 동일) ═══
-const SHOPS=[
+// ═══ 세차장 / 상품 데이터 ═══
+const SHOPS = [
   {name:"스파클 셀프세차장",type:"셀프",dist:"350m",rating:4.8,price:"5,000원~",discount:"앱 회원 20% 할인",img:"🏪",hours:"24시간",tags:["셀프","24시간"]},
   {name:"프리미엄 손세차 강남점",type:"손세차",dist:"1.2km",rating:4.9,price:"25,000원~",discount:"첫 방문 30% 할인",img:"🧽",hours:"09:00-21:00",tags:["손세차","프리미엄"]},
   {name:"워시킹 자동세차",type:"자동",dist:"800m",rating:4.5,price:"8,000원~",discount:"월정액 29,900원",img:"🚿",hours:"07:00-23:00",tags:["자동","월정액"]},
@@ -109,93 +168,65 @@ const SHOPS=[
   {name:"버블워시 판교점",type:"셀프",dist:"1.8km",rating:4.6,price:"6,000원~",discount:"야간할인 30%",img:"🫧",hours:"24시간",tags:["셀프","24시간"]}
 ];
 
-const PRODUCTS=[
-  {name:"소낙스 글로스 세차샴푸 1L",price:"19,200",orig:"23,000",disc:16,rating:4.7,reviews:2847,img:"🧴",cat:"샴푸",badge:"BEST",rocket:true,
-   desc:"독일 No.1 세차 브랜드. 풍성한 거품으로 도장면 보호하며 세차. 중성 pH로 코팅 위에도 안전.",
-   specs:["용량: 1,000ml","pH: 중성","원산지: 독일"],url:"https://link.coupang.com/a/dHnjfg"},
-  {name:"이엑스큐 핵사 클레이 미트",price:"23,900",orig:"28,000",disc:15,rating:4.8,reviews:1923,img:"🧤",cat:"워시미트",badge:"HOT",rocket:true,
-   desc:"워시미트 + 클레이바 기능이 합쳐진 올인원 미트.",
-   specs:["소재: 극세사+클레이","원산지: 한국","세탁: 세탁기 사용 가능"],url:"https://link.coupang.com/a/dHnnx4"},
-  {name:"마프라 매니악 퀵 디테일러 500ml",price:"18,500",orig:"22,000",disc:16,rating:4.6,reviews:1245,img:"💦",cat:"디테일러",badge:"NEW",rocket:true,
-   desc:"세차 후 물기 제거와 동시에 광택.",
-   specs:["용량: 500ml","타입: 스프레이","원산지: 이탈리아"],url:"https://link.coupang.com/a/dHnqsJ"},
-  {name:"카프로 릴리스 세라믹 코팅 보호제 500ml",price:"8,930",orig:"25,900",disc:65,rating:4.9,reviews:3156,img:"🛡️",cat:"코팅",badge:"SALE",rocket:true,
-   desc:"세라믹 코팅 보호제. 기존 코팅 위에 덧발라 지속력 연장.",
-   specs:["용량: 500ml","성분: 세라믹","원산지: 이스라엘"],url:"https://link.coupang.com/a/dHnxZ0"},
-  {name:"코멧 극세사 청소 타월 5P",price:"5,050",orig:"8,000",disc:37,rating:4.5,reviews:5234,img:"🏳️",cat:"타월",badge:"BEST",rocket:true,
-   desc:"부드러운 극세사 소재 5장 세트.",
-   specs:["크기: 40×40cm 5장","소재: 극세사"],url:"https://link.coupang.com/a/dHnBzW"},
-  {name:"불스원 하이 글로시 타이어 코팅제 600ml",price:"7,540",orig:"10,000",disc:24,rating:4.4,reviews:987,img:"⚫",cat:"타이어",badge:"",rocket:true,
-   desc:"스프레이 타입으로 타이어에 뿌리기만 하면 새것 같은 윤기.",
-   specs:["용량: 600ml","마감: 고광택","브랜드: 불스원"],url:"https://link.coupang.com/a/dHpmR1"},
-  {name:"아이언킬 철분제거제 1L",price:"5,830",orig:"8,000",disc:27,rating:4.7,reviews:2103,img:"🔴",cat:"클리너",badge:"HOT",rocket:true,
-   desc:"뿌리면 보라색으로 변하며 철분 오염을 녹여냄.",
-   specs:["용량: 1,000ml","반응: 보라색 변색","pH: 중성"],url:"https://link.coupang.com/a/dHpIsD"},
-  {name:"플레이왁스 워터스팟 카샴푸 리무버 500ml",price:"13,900",orig:"25,000",disc:44,rating:4.5,reviews:1567,img:"💧",cat:"클리너",badge:"SALE",rocket:false,
-   desc:"세차와 물때 제거를 동시에.",
-   specs:["용량: 500ml","타입: 카샴푸","효과: 물때 제거"],url:"https://link.coupang.com/a/dHpLTQ"}
+const PRODUCTS = [
+  {name:"소낙스 글로스 세차샴푸 1L",price:"19,200",orig:"23,000",disc:16,rating:4.7,reviews:2847,img:"🧴",cat:"샴푸",badge:"BEST",rocket:true,desc:"독일 No.1 세차 브랜드. 풍성한 거품으로 도장면 보호하며 세차. 중성 pH로 코팅 위에도 안전.",specs:["용량: 1,000ml","pH: 중성","원산지: 독일"],url:"https://link.coupang.com/a/dHnjfg"},
+  {name:"이엑스큐 핵사 클레이 미트",price:"23,900",orig:"28,000",disc:15,rating:4.8,reviews:1923,img:"🧤",cat:"워시미트",badge:"HOT",rocket:true,desc:"워시미트 + 클레이바 기능이 합쳐진 올인원 미트.",specs:["소재: 극세사+클레이","원산지: 한국","세탁: 세탁기 사용 가능"],url:"https://link.coupang.com/a/dHnnx4"},
+  {name:"마프라 매니악 퀵 디테일러 500ml",price:"18,500",orig:"22,000",disc:16,rating:4.6,reviews:1245,img:"💦",cat:"디테일러",badge:"NEW",rocket:true,desc:"세차 후 물기 제거와 동시에 광택.",specs:["용량: 500ml","타입: 스프레이","원산지: 이탈리아"],url:"https://link.coupang.com/a/dHnqsJ"},
+  {name:"카프로 릴리스 세라믹 코팅 보호제 500ml",price:"8,930",orig:"25,900",disc:65,rating:4.9,reviews:3156,img:"🛡️",cat:"코팅",badge:"SALE",rocket:true,desc:"세라믹 코팅 보호제. 기존 코팅 위에 덧발라 지속력 연장.",specs:["용량: 500ml","성분: 세라믹","원산지: 이스라엘"],url:"https://link.coupang.com/a/dHnxZ0"},
+  {name:"코멧 극세사 청소 타월 5P",price:"5,050",orig:"8,000",disc:37,rating:4.5,reviews:5234,img:"🏳️",cat:"타월",badge:"BEST",rocket:true,desc:"부드러운 극세사 소재 5장 세트.",specs:["크기: 40×40cm 5장","소재: 극세사"],url:"https://link.coupang.com/a/dHnBzW"},
+  {name:"불스원 하이 글로시 타이어 코팅제 600ml",price:"7,540",orig:"10,000",disc:24,rating:4.4,reviews:987,img:"⚫",cat:"타이어",badge:"",rocket:true,desc:"스프레이 타입으로 타이어에 뿌리기만 하면 새것 같은 윤기.",specs:["용량: 600ml","마감: 고광택","브랜드: 불스원"],url:"https://link.coupang.com/a/dHpmR1"},
+  {name:"아이언킬 철분제거제 1L",price:"5,830",orig:"8,000",disc:27,rating:4.7,reviews:2103,img:"🔴",cat:"클리너",badge:"HOT",rocket:true,desc:"뿌리면 보라색으로 변하며 철분 오염을 녹여냄.",specs:["용량: 1,000ml","반응: 보라색 변색","pH: 중성"],url:"https://link.coupang.com/a/dHpIsD"},
+  {name:"플레이왁스 워터스팟 카샴푸 리무버 500ml",price:"13,900",orig:"25,000",disc:44,rating:4.5,reviews:1567,img:"💧",cat:"클리너",badge:"SALE",rocket:false,desc:"세차와 물때 제거를 동시에.",specs:["용량: 500ml","타입: 카샴푸","효과: 물때 제거"],url:"https://link.coupang.com/a/dHpLTQ"}
 ];
 
-const BANNERS=[
+const BANNERS = [
   {text:"🚗 인스타워시 출장세차 — 첫 이용 50% 할인!",bg:"linear-gradient(135deg,#6366f1,#8b5cf6)",cta:"바로가기 →"},
   {text:"🧴 세차용품 최대 65% 할인 세일 중!",bg:"linear-gradient(135deg,#f59e0b,#ef4444)",cta:"쇼핑하기 →"},
   {text:"🛡️ 카프로 세라믹코팅 65% 할인 이벤트!",bg:"linear-gradient(135deg,#06b6d4,#3b82f6)",cta:"구매하기 →"}
 ];
 
-// ═══════════════════════════════════════
-//  실제 날씨 API 함수들
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════
+//  실시간 날씨 API (자동 — 사용자 입력 불필요)
+// ═══════════════════════════════════════════════
 
-// GPS 위치 가져오기
-async function getLocation() {
+async function getGPS() {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error('GPS를 지원하지 않는 브라우저입니다.'));
-      return;
-    }
+    if (!navigator.geolocation) { reject(new Error('GPS 미지원')); return; }
     navigator.geolocation.getCurrentPosition(
       pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
       err => reject(err),
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 300000 }
     );
   });
 }
 
-// 위치 이름 가져오기 (Reverse Geocoding)
-async function getLocationName(lat, lon, apiKey) {
+async function getLocationName(lat, lon) {
   try {
-    const res = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`);
+    const res = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${OWM_API_KEY}`);
     const data = await res.json();
-    if (data && data[0]) {
-      const loc = data[0];
-      return loc.local_names?.ko || loc.name || '내 위치';
-    }
+    if (data && data[0]) return data[0].local_names?.ko || data[0].name || '내 위치';
     return '내 위치';
   } catch(e) { return '내 위치'; }
 }
 
-// 현재 날씨 가져오기
-async function fetchCurrentWeather(lat, lon, apiKey) {
-  const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=kr`);
+async function fetchCurrentWeather(lat, lon) {
+  const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OWM_API_KEY}&units=metric&lang=kr`);
   if (!res.ok) throw new Error(`날씨 API 오류: ${res.status}`);
   return await res.json();
 }
 
-// 5일 예보 가져오기 (3시간 간격)
-async function fetchForecast(lat, lon, apiKey) {
-  const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=kr`);
+async function fetchForecast(lat, lon) {
+  const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${OWM_API_KEY}&units=metric&lang=kr`);
   if (!res.ok) throw new Error(`예보 API 오류: ${res.status}`);
   return await res.json();
 }
 
-// 대기질 가져오기
-async function fetchAirPollution(lat, lon, apiKey) {
-  const res = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`);
+async function fetchAirPollution(lat, lon) {
+  const res = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${OWM_API_KEY}`);
   if (!res.ok) throw new Error(`대기질 API 오류: ${res.status}`);
   return await res.json();
 }
 
-// OWM 아이콘 → 이모지 변환
 function weatherIcon(id, icon) {
   if (id >= 200 && id < 300) return '⛈️';
   if (id >= 300 && id < 400) return '🌦️';
@@ -211,19 +242,15 @@ function weatherIcon(id, icon) {
   return '🌡️';
 }
 
-// OWM 데이터 → 앱 내부 형식 변환
 function parseCurrentWeather(data, airData) {
   const w = data.weather[0];
-  const pop = 0; // 현재 날씨에는 pop 없음
-  const aqi = airData?.list?.[0]?.main?.aqi || 1; // 1~5
+  const aqi = airData?.list?.[0]?.main?.aqi || 1;
   const pm10 = airData?.list?.[0]?.components?.pm10 || 0;
   const pm25 = airData?.list?.[0]?.components?.pm2_5 || 0;
-  
-  const dustLevel = aqi - 1; // 0~4
+  const dustLevel = aqi - 1;
   const dustLabels = ["좋음","보통","나쁨","매우나쁨","위험"];
   const dustColors = ["#4ade80","#facc15","#fb923c","#f87171","#dc2626"];
   
-  // 강수확률: 현재 날씨에서는 clouds + 강수량으로 추정
   let rainChance = 0;
   if (data.rain) rainChance = Math.min(95, 70 + (data.rain['1h'] || 0) * 10);
   else if (data.snow) rainChance = Math.min(95, 70 + (data.snow['1h'] || 0) * 10);
@@ -245,186 +272,58 @@ function parseCurrentWeather(data, airData) {
     dustLabel: dustLabels[Math.min(dustLevel, 4)],
     dustColor: dustColors[Math.min(dustLevel, 4)],
     pm10: Math.round(pm10),
-    pm25: Math.round(pm25),
-    sunrise: data.sys?.sunrise,
-    sunset: data.sys?.sunset,
-    raw: data
+    pm25: Math.round(pm25)
   };
 }
 
-// 예보 데이터를 일별로 집계
 function parseForecastByDay(forecastData) {
   const days = {};
   forecastData.list.forEach(item => {
     const dateStr = item.dt_txt.split(' ')[0];
-    if (!days[dateStr]) {
-      days[dateStr] = { temps: [], pops: [], conditions: [], humidities: [], winds: [], icons: [] };
-    }
+    if (!days[dateStr]) days[dateStr] = { temps:[], pops:[], conditions:[], humidities:[], winds:[], icons:[] };
     days[dateStr].temps.push(item.main.temp);
     days[dateStr].pops.push((item.pop || 0) * 100);
     days[dateStr].conditions.push(item.weather[0]);
     days[dateStr].humidities.push(item.main.humidity);
     days[dateStr].winds.push(item.wind.speed);
-    days[dateStr].icons.push(item.weather[0]);
   });
-
   return Object.entries(days).map(([dateStr, data]) => {
     const maxPop = Math.round(Math.max(...data.pops));
-    const avgTemp = Math.round(data.temps.reduce((a,b) => a+b, 0) / data.temps.length);
-    const avgHumidity = Math.round(data.humidities.reduce((a,b) => a+b, 0) / data.humidities.length);
-    // 가장 나쁜 날씨 조건 선택
+    const avgTemp = Math.round(data.temps.reduce((a,b)=>a+b,0)/data.temps.length);
+    const avgHumidity = Math.round(data.humidities.reduce((a,b)=>a+b,0)/data.humidities.length);
     const worstCondition = data.conditions.reduce((worst, c) => {
       if (c.id < worst.id || (c.id >= 200 && c.id < 700 && worst.id >= 800)) return c;
       return worst;
     }, data.conditions[0]);
-
-    return {
-      date: new Date(dateStr),
-      dateStr,
-      icon: weatherIcon(worstCondition.id, worstCondition.icon),
-      label: worstCondition.description,
-      temp: avgTemp,
-      humidity: avgHumidity,
-      rainChance: maxPop,
-      windSpeed: Math.round(Math.max(...data.winds) * 10) / 10,
-      dustLevel: 1, // 예보에는 대기질 없음, 기본값
-      dustLabel: "보통",
-      dustColor: "#facc15"
-    };
+    return { date: new Date(dateStr), dateStr, icon: weatherIcon(worstCondition.id, worstCondition.icon), label: worstCondition.description, temp: avgTemp, humidity: avgHumidity, rainChance: maxPop, windSpeed: Math.round(Math.max(...data.winds)*10)/10, dustLevel:1, dustLabel:"보통", dustColor:"#facc15" };
   });
 }
 
-// ═══ 세차 점수 계산 (실제 데이터 기반) ═══
-function washScore(w) {
-  let s = 100;
-  // 강수확률
-  if (w.rainChance > 60) s -= 60;
-  else if (w.rainChance > 30) s -= 30;
-  else if (w.rainChance > 15) s -= 10;
-  // 미세먼지
-  if (w.dustLevel >= 4) s -= 50;
-  else if (w.dustLevel >= 3) s -= 40;
-  else if (w.dustLevel >= 2) s -= 20;
-  else if (w.dustLevel >= 1) s -= 5;
-  // 기온
-  if (w.temp < -5) s -= 35;
-  else if (w.temp < 0) s -= 25;
-  else if (w.temp < 5) s -= 10;
-  // 습도
-  if (w.humidity > 80) s -= 15;
-  else if (w.humidity > 70) s -= 10;
-  // 바람
-  if (w.windSpeed > 10) s -= 15;
-  else if (w.windSpeed > 7) s -= 5;
-  return Math.max(0, Math.min(100, s));
-}
-
-function grade(s) {
-  if (s >= 85) return {g:"최고",emoji:"🚗✨",color:"#22c55e",bg:"rgba(34,197,94,0.1)",msg:"세차하기 완벽한 날!"};
-  if (s >= 65) return {g:"좋음",emoji:"🚙👍",color:"#3b82f6",bg:"rgba(59,130,246,0.1)",msg:"세차하기 좋은 날이에요."};
-  if (s >= 45) return {g:"보통",emoji:"🚕",color:"#eab308",bg:"rgba(234,179,8,0.1)",msg:"세차해도 괜찮아요."};
-  if (s >= 25) return {g:"비추천",emoji:"😥",color:"#f97316",bg:"rgba(249,115,22,0.1)",msg:"세차를 미루는 게 좋겠어요."};
-  return {g:"금지",emoji:"🚫",color:"#ef4444",bg:"rgba(239,68,68,0.1)",msg:"오늘은 세차하지 마세요!"};
-}
-
-// ═══ 폴백: API 키 없을 때 기존 알고리즘 ═══
-function genWeatherFallback(d) {
-  const s=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(),h=((s*2654435761)>>>0)%1000;
-  const c=[{type:"sunny",label:"맑음",icon:"☀️",rain:5},{type:"partly",label:"구름 조금",icon:"⛅",rain:12},{type:"cloudy",label:"흐림",icon:"☁️",rain:25},
-    {type:"rainy",label:"비",icon:"🌧️",rain:80},{type:"heavy",label:"폭우",icon:"⛈️",rain:95},{type:"snow",label:"눈",icon:"🌨️",rain:70},{type:"windy",label:"바람",icon:"💨",rain:15}];
-  let i=h<300?0:h<480?1:h<620?2:h<780?3:h<870?4:h<940?5:6;const m=d.getMonth();
-  if((m>=11||m<=1)&&h>600&&h<800)i=5;if(m>=6&&m<=8){if(h>500&&h<700)i=3;if(h>700&&h<800)i=4;}
-  const t=Math.round(m>=3&&m<=5?10+h%15:m>=6&&m<=8?24+h%12:m>=9&&m<=10?8+h%14:-5+h%12),hu=30+h%50,du=h%5;
-  const dL=["좋음","보통","나쁨","매우나쁨","위험"],dC=["#4ade80","#facc15","#fb923c","#f87171","#dc2626"];
-  return{...c[i],temp:t,humidity:hu,windSpeed:3,dustLevel:du,dustLabel:dL[Math.min(du,4)],dustColor:dC[Math.min(du,4)],rainChance:Math.min(100,c[i].rain+(h%15))};
-}
-
-// 현재 표시할 날씨 데이터 가져오기
-function getWeatherForDisplay() {
-  const S = state;
-  const isToday = ds(S.selectedDate) === ds(today);
-
-  // 실제 API 데이터가 있으면 사용
-  if (isToday && S.weatherData) {
-    return S.weatherData;
-  }
-  
-  // 예보 데이터에서 찾기
-  if (S.forecastDays) {
-    const selStr = S.selectedDate.toISOString().split('T')[0];
-    const found = S.forecastDays.find(f => f.dateStr === selStr);
-    if (found) return found;
-  }
-  
-  // 폴백
-  return genWeatherFallback(S.selectedDate);
-}
-
-// 예보 배열 생성
-function getForecastArray() {
-  const S = state;
-  const result = [];
-  
-  // 오늘
-  if (S.weatherData) {
-    result.push({ date: new Date(today), weather: S.weatherData, score: washScore(S.weatherData) });
-  } else {
-    const w = genWeatherFallback(today);
-    result.push({ date: new Date(today), weather: w, score: washScore(w) });
-  }
-  
-  // 예보일
-  if (S.forecastDays) {
-    S.forecastDays.forEach(fd => {
-      if (ds(fd.date) !== ds(today)) {
-        result.push({ date: fd.date, weather: fd, score: washScore(fd) });
-      }
-    });
-  } else {
-    // 폴백
-    for (let i = 1; i < 7; i++) {
-      const d = new Date(today);
-      d.setDate(d.getDate() + i);
-      const w = genWeatherFallback(d);
-      result.push({ date: d, weather: w, score: washScore(w) });
-    }
-  }
-  
-  return result.slice(0, S.isPremium ? 14 : 7);
-}
-
-// ═══ 날씨 데이터 전체 로드 ═══
+// ─── 날씨 전체 로드 (자동 실행) ───
 async function loadWeatherData() {
-  if (!state.apiKey) return;
-  
   state.weatherLoading = true;
   state.weatherError = null;
   render();
 
   try {
-    // 위치 가져오기
     let loc = state.location;
     if (!loc) {
       try {
-        const pos = await getLocation();
-        const name = await getLocationName(pos.lat, pos.lon, state.apiKey);
+        const pos = await getGPS();
+        const name = await getLocationName(pos.lat, pos.lon);
         loc = { lat: pos.lat, lon: pos.lon, name };
-        state.location = loc;
-        saveLocation(loc);
       } catch(e) {
         // GPS 실패 시 서울 기본값
         loc = { lat: 37.5665, lon: 126.9780, name: '서울' };
-        state.location = loc;
-        saveLocation(loc);
-        notify('📍 GPS 실패 → 서울 기본 설정');
+        notify('📍 GPS 허용 안 됨 → 서울 기본 설정');
       }
+      state.location = loc;
     }
 
-    // 병렬로 데이터 가져오기
     const [weatherRes, forecastRes, airRes] = await Promise.all([
-      fetchCurrentWeather(loc.lat, loc.lon, state.apiKey),
-      fetchForecast(loc.lat, loc.lon, state.apiKey),
-      fetchAirPollution(loc.lat, loc.lon, state.apiKey)
+      fetchCurrentWeather(loc.lat, loc.lon),
+      fetchForecast(loc.lat, loc.lon),
+      fetchAirPollution(loc.lat, loc.lon)
     ]);
 
     state.weatherData = parseCurrentWeather(weatherRes, airRes);
@@ -433,186 +332,256 @@ async function loadWeatherData() {
     state.airData = airRes;
     state.lastFetch = new Date();
     state.weatherError = null;
-    
   } catch(e) {
     console.error('날씨 로드 실패:', e);
     state.weatherError = e.message;
-    if (e.message.includes('401')) {
-      state.weatherError = 'API 키가 올바르지 않습니다. 설정에서 확인해주세요.';
-    }
   }
-  
   state.weatherLoading = false;
   render();
 }
 
-// 위치 새로고침
 async function refreshLocation() {
   state.location = null;
-  localStorage.removeItem(LOC_KEY);
+  notify('📍 위치 다시 찾는 중...');
   await loadWeatherData();
 }
 
-// API 키 설정/변경
-function setupApiKey() {
-  state.showApiSetup = true;
-  render();
+// ═══ 세차 점수 / 등급 ═══
+function washScore(w) {
+  let s = 100;
+  if (w.rainChance > 60) s -= 60;
+  else if (w.rainChance > 30) s -= 30;
+  else if (w.rainChance > 15) s -= 10;
+  if (w.dustLevel >= 4) s -= 50;
+  else if (w.dustLevel >= 3) s -= 40;
+  else if (w.dustLevel >= 2) s -= 20;
+  else if (w.dustLevel >= 1) s -= 5;
+  if (w.temp < -5) s -= 35;
+  else if (w.temp < 0) s -= 25;
+  else if (w.temp < 5) s -= 10;
+  if (w.humidity > 80) s -= 15;
+  else if (w.humidity > 70) s -= 10;
+  if (w.windSpeed > 10) s -= 15;
+  else if (w.windSpeed > 7) s -= 5;
+  return Math.max(0, Math.min(100, s));
 }
 
-function saveApiKeyAndLoad() {
-  const input = document.getElementById('api-key-input');
-  if (!input) return;
-  const key = input.value.trim();
-  if (!key) { notify('⚠️ API 키를 입력해주세요'); return; }
-  state.apiKey = key;
-  saveApiKey(key);
-  state.showApiSetup = false;
-  loadWeatherData();
+function grade(s) {
+  if (s>=85) return {g:"최고",emoji:"🚗✨",color:"#22c55e",bg:"rgba(34,197,94,0.1)",msg:"세차하기 완벽한 날!"};
+  if (s>=65) return {g:"좋음",emoji:"🚙👍",color:"#3b82f6",bg:"rgba(59,130,246,0.1)",msg:"세차하기 좋은 날이에요."};
+  if (s>=45) return {g:"보통",emoji:"🚕",color:"#eab308",bg:"rgba(234,179,8,0.1)",msg:"세차해도 괜찮아요."};
+  if (s>=25) return {g:"비추천",emoji:"😥",color:"#f97316",bg:"rgba(249,115,22,0.1)",msg:"세차를 미루는 게 좋겠어요."};
+  return {g:"금지",emoji:"🚫",color:"#ef4444",bg:"rgba(239,68,68,0.1)",msg:"오늘은 세차하지 마세요!"};
+}
+
+// ═══ 폴백 날씨 (API 실패 시) ═══
+function genWeatherFallback(d) {
+  const s=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(),h=((s*2654435761)>>>0)%1000;
+  const c=[{label:"맑음",icon:"☀️",rain:5},{label:"구름 조금",icon:"⛅",rain:12},{label:"흐림",icon:"☁️",rain:25},{label:"비",icon:"🌧️",rain:80},{label:"폭우",icon:"⛈️",rain:95},{label:"눈",icon:"🌨️",rain:70},{label:"바람",icon:"💨",rain:15}];
+  let i=h<300?0:h<480?1:h<620?2:h<780?3:h<870?4:h<940?5:6;const m=d.getMonth();
+  if((m>=11||m<=1)&&h>600&&h<800)i=5;if(m>=6&&m<=8){if(h>500&&h<700)i=3;if(h>700&&h<800)i=4;}
+  const t=Math.round(m>=3&&m<=5?10+h%15:m>=6&&m<=8?24+h%12:m>=9&&m<=10?8+h%14:-5+h%12),hu=30+h%50,du=h%5;
+  const dL=["좋음","보통","나쁨","매우나쁨","위험"],dC=["#4ade80","#facc15","#fb923c","#f87171","#dc2626"];
+  return{...c[i],temp:t,humidity:hu,windSpeed:3,dustLevel:du,dustLabel:dL[Math.min(du,4)],dustColor:dC[Math.min(du,4)],rainChance:Math.min(100,c[i].rain+(h%15))};
+}
+
+// ═══ 표시할 날씨 데이터 ═══
+function getWeatherForDisplay() {
+  const S = state;
+  const isToday = ds(S.selectedDate) === ds(today);
+  if (isToday && S.weatherData) return S.weatherData;
+  if (S.forecastDays) {
+    const selStr = S.selectedDate.toISOString().split('T')[0];
+    const found = S.forecastDays.find(f => f.dateStr === selStr);
+    if (found) return found;
+  }
+  return genWeatherFallback(S.selectedDate);
+}
+
+function getForecastArray() {
+  const S = state;
+  const result = [];
+  if (S.weatherData) {
+    result.push({ date: new Date(today), weather: S.weatherData, score: washScore(S.weatherData) });
+  } else {
+    const w = genWeatherFallback(today);
+    result.push({ date: new Date(today), weather: w, score: washScore(w) });
+  }
+  if (S.forecastDays) {
+    S.forecastDays.forEach(fd => {
+      if (ds(fd.date) !== ds(today)) result.push({ date: fd.date, weather: fd, score: washScore(fd) });
+    });
+  } else {
+    for (let i = 1; i < 7; i++) {
+      const d = new Date(today); d.setDate(d.getDate()+i);
+      const w = genWeatherFallback(d);
+      result.push({ date: d, weather: w, score: washScore(w) });
+    }
+  }
+  return result.slice(0, S.isPremium ? 14 : 7);
 }
 
 // ═══ 유틸리티 ═══
-function notify(msg){state.notification=msg;render();setTimeout(()=>{state.notification=null;render();},2400);}
-function setTab(t){state.tab=t;render();window.scrollTo(0,0);}
-function ds(d){return d.toDateString();}
-function starsHTML(r){return'★'.repeat(Math.floor(r))+(r%1>=0.5?'½':'')+'☆'.repeat(5-Math.ceil(r));}
-function ringSVG(score,size=110){const g=grade(score),r=(size-12)/2,c=2*Math.PI*r,off=c-(score/100)*c;
-  return`<div class="ring-wrap" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}" style="transform:rotate(-90deg)">
+function notify(msg) { state.notification=msg; render(); setTimeout(()=>{state.notification=null;render();},2400); }
+function setTab(t) { state.tab=t; render(); window.scrollTo(0,0); }
+function ds(d) { return d.toDateString(); }
+function starsHTML(r) { return '★'.repeat(Math.floor(r))+(r%1>=0.5?'½':'')+'☆'.repeat(5-Math.ceil(r)); }
+
+function ringSVG(score,size=110) {
+  const g=grade(score),r=(size-12)/2,c=2*Math.PI*r,off=c-(score/100)*c;
+  return `<div class="ring-wrap" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}" style="transform:rotate(-90deg)">
     <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="7"/>
     <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${g.color}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" style="transition:stroke-dashoffset 0.8s ease"/>
-    </svg><div class="center"><span class="score-num" style="font-size:${size*0.24}px;color:${g.color}">${score}</span><span class="score-max">/ 100</span></div></div>`;}
+    </svg><div class="center"><span class="score-num" style="font-size:${size*0.24}px;color:${g.color}">${score}</span><span class="score-max">/ 100</span></div></div>`;
+}
 
-function goToCoupang(idx){window.open(PRODUCTS[idx].url,'_blank');}
-function openProduct(idx){state.selectedProduct=idx;render();}
-function closeProduct(){state.selectedProduct=null;render();}
+function goToCoupang(idx) { window.open(PRODUCTS[idx].url,'_blank'); }
+function openProduct(idx) { state.selectedProduct=idx; render(); }
+function closeProduct() { state.selectedProduct=null; render(); }
 
-function dayColor(d,y,m){
-  // 예보 데이터가 있으면 활용
+function dayColor(d,y,m) {
   if(state.forecastDays){
     const ds2=new Date(y,m,d).toISOString().split('T')[0];
     const fd=state.forecastDays.find(f=>f.dateStr===ds2);
     if(fd){const s=washScore(fd);if(s>=85)return"rgba(34,197,94,0.4)";if(s>=65)return"rgba(59,130,246,0.3)";if(s>=45)return"rgba(234,179,8,0.25)";if(s>=25)return"rgba(249,115,22,0.25)";return"rgba(239,68,68,0.25)";}
   }
-  // 오늘 + 실제 데이터
   if(ds(new Date(y,m,d))===ds(today)&&state.weatherData){
     const s=washScore(state.weatherData);if(s>=85)return"rgba(34,197,94,0.4)";if(s>=65)return"rgba(59,130,246,0.3)";if(s>=45)return"rgba(234,179,8,0.25)";if(s>=25)return"rgba(249,115,22,0.25)";return"rgba(239,68,68,0.25)";
   }
-  // 폴백
   const w=genWeatherFallback(new Date(y,m,d)),s=washScore(w);
   if(s>=85)return"rgba(34,197,94,0.4)";if(s>=65)return"rgba(59,130,246,0.3)";if(s>=45)return"rgba(234,179,8,0.25)";if(s>=25)return"rgba(249,115,22,0.25)";return"rgba(239,68,68,0.25)";
 }
 
-// ═══════════════════════════════════════
-//  렌더링
-// ═══════════════════════════════════════
-function render(){
-  const S=state;
-  const w=getWeatherForDisplay();
-  const sc=washScore(w);
-  const gr=grade(sc);
-  const lastW=S.washLogs[0],daysSince=lastW?Math.floor((today-new Date(lastW.date))/864e5):null;
-  const fc=getForecastArray();
-  const best=fc.length>0?fc.reduce((a,b)=>a.score>b.score?a:b):null;
-  const isGoodDay=sc>=65;
-  const isLive = !!S.weatherData;
-  let html='';
+function copyLink() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(()=>notify('✅ 링크 복사 완료!')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);notify('✅ 링크 복사 완료!');
+  });
+}
+function shareKakao() {
+  const url=encodeURIComponent(window.location.href);
+  const text=encodeURIComponent('🚿 오늘 세차해도 될까? 날씨 기반 세차 점수 확인!');
+  window.open(`https://story.kakao.com/share?url=${url}&text=${text}`,'_blank');
+}
 
-  // HOME
-  if(S.tab==="home"){
-    html+=`<div class="page"><div style="text-align:center;padding:8px 0 14px">
-      <div style="font-size:10px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;font-family:Outfit">Car Wash Advisor</div>
-      <h1 style="font-size:24px;font-weight:900;margin:4px 0 0;background:linear-gradient(135deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🚿 세차의 날</h1></div>`;
+// ═══════════════════════════════════════════════
+//  렌더링
+// ═══════════════════════════════════════════════
+function render() {
+  const S = state;
+  const w = getWeatherForDisplay();
+  const sc = washScore(w);
+  const gr = grade(sc);
+  const lastW = S.washLogs[0];
+  const daysSince = lastW ? Math.floor((today - new Date(lastW.date))/864e5) : null;
+  const fc = getForecastArray();
+  const best = fc.length > 0 ? fc.reduce((a,b)=>a.score>b.score?a:b) : null;
+  const isGoodDay = sc >= 65;
+  const isLive = !!S.weatherData;
+  let html = '';
+
+  // ══════ HOME ══════
+  if (S.tab === "home") {
+    html += `<div class="page">
+      <div style="text-align:center;padding:8px 0 14px">
+        <div style="font-size:10px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;font-family:Outfit">Car Wash Advisor</div>
+        <h1 style="font-size:24px;font-weight:900;margin:4px 0 0;background:linear-gradient(135deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🚿 세차의 날</h1>
+      </div>`;
 
     // 실시간 배지 + 위치
-    html+=`<div class="flex-b" style="margin-bottom:10px"><div class="flex-c" style="gap:6px">`;
-    if(isLive){html+=`<div class="live-badge"><span class="live-dot"></span>실시간</div>`;}
-    else{html+=`<div style="font-size:10px;color:var(--text3)">⚡ 예측 데이터</div>`;}
-    if(S.location){html+=`<div class="location-badge" onclick="refreshLocation()">📍 ${S.location.name}</div>`;}
-    html+=`</div><div style="font-size:10px;color:var(--text3);cursor:pointer" onclick="setupApiKey()">⚙️ 설정</div></div>`;
-
-    // API 키 미설정 안내
-    if(!S.apiKey){
-      html+=`<div class="card" style="background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.2);cursor:pointer" onclick="setupApiKey()">
-        <div class="flex-c" style="gap:12px"><span style="font-size:26px">🌤️</span><div style="flex:1">
-          <div style="font-size:14px;font-weight:800;color:var(--blue)">실시간 날씨 연동하기</div>
-          <div style="font-size:11px;color:var(--text2);line-height:1.5">OpenWeatherMap API 키를 등록하면 실제 날씨 기반 세차 점수를 확인할 수 있어요!</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:4px">무료 가입 → API 키 발급 → 여기에 입력</div>
-        </div><div style="color:var(--blue);font-size:18px">→</div></div></div>`;
-    }
+    html += `<div class="flex-b" style="margin-bottom:10px"><div class="flex-c" style="gap:6px">`;
+    if (isLive) html += `<div class="live-badge"><span class="live-dot"></span>실시간</div>`;
+    else if (S.weatherLoading) html += `<div style="font-size:10px;color:var(--text2)">⏳ 날씨 로딩 중...</div>`;
+    else html += `<div style="font-size:10px;color:var(--text3)">⚡ 예측 데이터</div>`;
+    if (S.location) html += `<div class="location-badge" onclick="refreshLocation()">📍 ${S.location.name}</div>`;
+    html += `</div><div style="font-size:10px;color:var(--text3)">${isLive?'OpenWeatherMap':'예측'}</div></div>`;
 
     // 로딩 상태
-    if(S.weatherLoading){
-      html+=`<div class="card" style="text-align:center;padding:24px"><div class="loading-spinner"></div>
-        <div style="font-size:12px;color:var(--text2);margin-top:8px">날씨 데이터 로딩 중...</div></div>`;
+    if (S.weatherLoading) {
+      html += `<div class="card" style="text-align:center;padding:30px">
+        <div class="loading-spinner"></div>
+        <div style="font-size:13px;color:var(--text2);margin-top:12px">📍 현재 위치의 날씨를 불러오는 중...</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px">GPS 위치 허용을 눌러주세요</div></div>`;
     }
 
     // 에러 상태
-    if(S.weatherError){
-      html+=`<div class="card" style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.12)">
+    if (S.weatherError && !S.weatherLoading) {
+      html += `<div class="card" style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.12)">
         <div style="font-size:12px;color:var(--red);font-weight:600">⚠️ ${S.weatherError}</div>
         <div style="font-size:10px;color:var(--text3);margin-top:4px;cursor:pointer" onclick="loadWeatherData()">🔄 다시 시도</div></div>`;
     }
 
     // 배너
-    if(S.showBanner&&!S.isPremium){const b=BANNERS[S.bannerIdx%BANNERS.length];
-      html+=`<div class="banner-ad" style="background:${b.bg}" onclick="setTab('shop')"><div class="flex-b">
+    if (S.showBanner && !S.isPremium) {
+      const b = BANNERS[S.bannerIdx % BANNERS.length];
+      html += `<div class="banner-ad" style="background:${b.bg}" onclick="setTab('shop')"><div class="flex-b">
         <div style="font-size:13px;font-weight:600;color:#fff;flex:1;line-height:1.4">${b.text}</div>
         <div style="background:rgba(255,255,255,0.25);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;margin-left:10px">${b.cta}</div></div>
-        <div style="position:absolute;top:4px;right:8px;font-size:9px;color:rgba(255,255,255,0.35);cursor:pointer" onclick="event.stopPropagation();state.showBanner=false;render();">광고 ✕</div></div>`;}
-
-    // PRO 배너
-    if(!S.isPremium){html+=`<div class="card" style="background:linear-gradient(135deg,rgba(234,179,8,0.1),rgba(245,158,11,0.05));border-color:rgba(234,179,8,0.2);cursor:pointer" onclick="state.showPremiumModal=true;render();">
-      <div class="flex-c" style="gap:12px"><span style="font-size:26px">👑</span><div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--amber)">PRO 멤버십</div>
-      <div style="font-size:11px;color:var(--text2);line-height:1.5">광고 제거 · 14일 예보 · 알림</div></div>
-      <div style="background:#f59e0b;color:#000;font-weight:800;border-radius:10px;padding:8px 12px;font-size:12px">₩2,900/월</div></div></div>`;}
-
-    // 세차 점수 카드
-    html+=`<div class="card" style="background:${gr.bg};border-color:${gr.color}22;padding:18px"><div class="flex-c" style="gap:14px">${ringSVG(sc)}<div style="flex:1">
-      <div style="font-size:11px;color:var(--text2);margin-bottom:3px">${ds(S.selectedDate)===ds(today)?"오늘의 세차 점수":`${S.selectedDate.getMonth()+1}/${S.selectedDate.getDate()} 세차 점수`}${isLive&&ds(S.selectedDate)===ds(today)?' 🔴':''}
-      </div>
-      <div class="flex-c" style="gap:8px;margin-bottom:4px"><span style="font-size:22px">${gr.emoji}</span><span style="font-size:18px;font-weight:800;color:${gr.color}">${gr.g}</span></div>
-      <p style="font-size:12px;color:var(--text2);line-height:1.5">${gr.msg}</p></div></div></div>`;
-
-    // 날씨 상세 그리드
-    const wxItems = [
-      {l:"날씨",v:`${w.icon} ${w.label}`},
-      {l:"기온",v:`${w.temp}°C${w.feelsLike!=null?' (체감 '+w.feelsLike+'°C)':''}`},
-      {l:"강수확률",v:`💧 ${w.rainChance}%`,c:w.rainChance>40?"var(--red)":""},
-      {l:"습도",v:`${w.humidity}%`},
-      {l:"미세먼지",v:`${w.dustLabel}${w.pm10?' ('+w.pm10+'㎍)':''}`,c:w.dustColor},
-      {l:"세차 후 비",v:w.rainChance>30?"⚠️ 주의":"✅ 안전",c:w.rainChance>30?"var(--red)":"var(--green)"}
-    ];
-    html+=`<div class="grid-3" style="margin-bottom:12px">${wxItems.map(it=>`<div class="wx-mini"><div class="label">${it.l}</div><div class="val" style="color:${it.c||'var(--text)'}">${it.v}</div></div>`).join('')}</div>`;
-
-    // 추가 날씨 정보 (실시간일 때)
-    if(isLive && ds(S.selectedDate)===ds(today)){
-      html+=`<div class="grid-3" style="margin-bottom:12px">
-        <div class="wx-mini"><div class="label">바람</div><div class="val">💨 ${w.windSpeed}m/s</div></div>
-        <div class="wx-mini"><div class="label">초미세먼지</div><div class="val" style="color:${w.dustColor}">${w.pm25}㎍/m³</div></div>
-        <div class="wx-mini"><div class="label">구름</div><div class="val">☁️ ${w.clouds}%</div></div></div>`;
+        <div style="position:absolute;top:4px;right:8px;font-size:9px;color:rgba(255,255,255,0.35);cursor:pointer" onclick="event.stopPropagation();state.showBanner=false;render();">광고 ✕</div></div>`;
     }
 
-    // 마지막 세차
-    if(daysSince!==null){const wn=daysSince>14;html+=`<div class="card flex-b" style="padding:12px 16px;${wn?'background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.12)':''}">
-      <div><div style="font-size:11px;color:var(--text3)">마지막 세차</div><div style="font-size:16px;font-weight:800;color:${wn?'var(--red)':'var(--text)'}">${daysSince}일 전</div></div>
-      <div style="text-align:right"><div style="font-size:10px;color:var(--text3)">${lastW.type}</div>${wn?'<div style="font-size:11px;color:var(--red);font-weight:600;margin-top:2px">세차가 필요해요! 🚨</div>':''}</div></div>`;}
+    // PRO 배너
+    if (!S.isPremium) {
+      html += `<div class="card" style="background:linear-gradient(135deg,rgba(234,179,8,0.1),rgba(245,158,11,0.05));border-color:rgba(234,179,8,0.2);cursor:pointer" onclick="state.showPremiumModal=true;render();">
+        <div class="flex-c" style="gap:12px"><span style="font-size:26px">👑</span><div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--amber)">PRO 멤버십</div>
+        <div style="font-size:11px;color:var(--text2);line-height:1.5">광고 제거 · 14일 예보 · 알림</div></div>
+        <div style="background:#f59e0b;color:#000;font-weight:800;border-radius:10px;padding:8px 12px;font-size:12px">₩2,900/월</div></div></div>`;
+    }
 
-    // 베스트 세차일
-    if(best){html+=`<div class="card" style="background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(59,130,246,0.04));border-color:rgba(34,197,94,0.1)">
-      <div style="font-size:10px;color:var(--text3);margin-bottom:5px">📅 베스트 세차일</div><div class="flex-b"><div>
-        <span style="font-size:16px;font-weight:800;color:var(--green)">${ds(best.date)===ds(today)?"오늘!":`${DAYS_KR[best.date.getDay()]}요일 (${best.date.getMonth()+1}/${best.date.getDate()})`}</span>
-        <div style="font-size:11px;color:var(--text2);margin-top:2px">${best.weather.icon} ${best.weather.label} · ${best.weather.temp}°C · ${best.score}점</div>
-      </div><div style="background:#22c55e;color:#000;font-weight:800;border-radius:10px;padding:6px 12px;font-size:12px">추천 ✓</div></div></div>`;}
+    // 세차 점수 카드
+    if (!S.weatherLoading) {
+      html += `<div class="card" style="background:${gr.bg};border-color:${gr.color}22;padding:18px"><div class="flex-c" style="gap:14px">${ringSVG(sc)}<div style="flex:1">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:3px">${ds(S.selectedDate)===ds(today)?"오늘의 세차 점수":`${S.selectedDate.getMonth()+1}/${S.selectedDate.getDate()} 세차 점수`}${isLive&&ds(S.selectedDate)===ds(today)?' 🔴':''}</div>
+        <div class="flex-c" style="gap:8px;margin-bottom:4px"><span style="font-size:22px">${gr.emoji}</span><span style="font-size:18px;font-weight:800;color:${gr.color}">${gr.g}</span></div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.5">${gr.msg}</p></div></div></div>`;
 
-    // 예보 바
-    html+=`<div style="margin-bottom:14px"><div style="font-size:11px;color:var(--text3);margin-bottom:8px">향후 ${S.isPremium?14:fc.length}일 세차 지수 ${isLive?'<span style="color:var(--green)">(실시간)</span>':''}</div>
-      <div class="forecast-bar">${fc.map((it,i)=>{const g2=grade(it.score),h=Math.max(14,(it.score/100)*60),sel=ds(it.date)===ds(S.selectedDate);
-        return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;opacity:${sel?1:0.6}" onclick="state.selectedDate=new Date(${it.date.getTime()});render();">
-          <span style="font-size:8px;color:${g2.color};font-weight:700">${it.score}</span>
-          <div style="width:100%;min-width:14px;height:${h}px;border-radius:4px;background:linear-gradient(to top,${g2.color},${g2.color}88);${sel?'border:2px solid #fff':''}"></div>
-          <span style="font-size:8px;color:var(--text3)">${i===0?"오늘":DAYS_KR[it.date.getDay()]}</span></div>`;}).join('')}</div></div>`;
+      // 날씨 상세 그리드
+      const wxItems = [
+        {l:"날씨",v:`${w.icon} ${w.label}`},
+        {l:"기온",v:`${w.temp}°C${w.feelsLike!=null?' (체감 '+w.feelsLike+'°C)':''}`},
+        {l:"강수확률",v:`💧 ${w.rainChance}%`,c:w.rainChance>40?"var(--red)":""},
+        {l:"습도",v:`${w.humidity}%`},
+        {l:"미세먼지",v:`${w.dustLabel}${w.pm10?' ('+w.pm10+'㎍)':''}`,c:w.dustColor},
+        {l:"세차 후 비",v:w.rainChance>30?"⚠️ 주의":"✅ 안전",c:w.rainChance>30?"var(--red)":"var(--green)"}
+      ];
+      html += `<div class="grid-3" style="margin-bottom:12px">${wxItems.map(it=>`<div class="wx-mini"><div class="label">${it.l}</div><div class="val" style="color:${it.c||'var(--text)'}">${it.v}</div></div>`).join('')}</div>`;
+
+      // 추가 날씨 정보 (실시간)
+      if (isLive && ds(S.selectedDate) === ds(today)) {
+        html += `<div class="grid-3" style="margin-bottom:12px">
+          <div class="wx-mini"><div class="label">바람</div><div class="val">💨 ${w.windSpeed}m/s</div></div>
+          <div class="wx-mini"><div class="label">초미세먼지</div><div class="val" style="color:${w.dustColor}">${w.pm25}㎍/m³</div></div>
+          <div class="wx-mini"><div class="label">구름</div><div class="val">☁️ ${w.clouds}%</div></div></div>`;
+      }
+
+      // 마지막 세차
+      if (daysSince !== null) {
+        const wn = daysSince > 14;
+        html += `<div class="card flex-b" style="padding:12px 16px;${wn?'background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.12)':''}">
+          <div><div style="font-size:11px;color:var(--text3)">마지막 세차</div><div style="font-size:16px;font-weight:800;color:${wn?'var(--red)':'var(--text)'}">${daysSince}일 전</div></div>
+          <div style="text-align:right"><div style="font-size:10px;color:var(--text3)">${lastW.type}</div>${wn?'<div style="font-size:11px;color:var(--red);font-weight:600;margin-top:2px">세차가 필요해요! 🚨</div>':''}</div></div>`;
+      }
+
+      // 베스트 세차일
+      if (best) {
+        html += `<div class="card" style="background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(59,130,246,0.04));border-color:rgba(34,197,94,0.1)">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:5px">📅 베스트 세차일</div><div class="flex-b"><div>
+            <span style="font-size:16px;font-weight:800;color:var(--green)">${ds(best.date)===ds(today)?"오늘!":`${DAYS_KR[best.date.getDay()]}요일 (${best.date.getMonth()+1}/${best.date.getDate()})`}</span>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">${best.weather.icon} ${best.weather.label} · ${best.weather.temp}°C · ${best.score}점</div>
+          </div><div style="background:#22c55e;color:#000;font-weight:800;border-radius:10px;padding:6px 12px;font-size:12px">추천 ✓</div></div></div>`;
+      }
+
+      // 예보 바
+      html += `<div style="margin-bottom:14px"><div style="font-size:11px;color:var(--text3);margin-bottom:8px">향후 ${fc.length}일 세차 지수 ${isLive?'<span style="color:var(--green)">(실시간)</span>':''}</div>
+        <div class="forecast-bar">${fc.map((it,i)=>{const g2=grade(it.score),h=Math.max(14,(it.score/100)*60),sel=ds(it.date)===ds(S.selectedDate);
+          return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;opacity:${sel?1:0.6}" onclick="state.selectedDate=new Date(${it.date.getTime()});render();">
+            <span style="font-size:8px;color:${g2.color};font-weight:700">${it.score}</span>
+            <div style="width:100%;min-width:14px;height:${h}px;border-radius:4px;background:linear-gradient(to top,${g2.color},${g2.color}88);${sel?'border:2px solid #fff':''}"></div>
+            <span style="font-size:8px;color:var(--text3)">${i===0?"오늘":DAYS_KR[it.date.getDay()]}</span></div>`;}).join('')}</div></div>`;
+    }
 
     // 쿠팡 추천 상품
-    html+=`<div style="margin-bottom:14px">
+    html += `<div style="margin-bottom:14px">
       <div style="background:rgba(227,24,55,0.1);border:1px solid rgba(227,24,55,0.2);border-radius:10px;padding:10px 14px;margin-bottom:10px;text-align:center"><span style="font-size:13px;font-weight:800;color:#ff4154">📢 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</span></div>
       <div class="flex-b" style="margin-bottom:8px">
       <div><span style="font-size:12px;font-weight:700">${isGoodDay?'🔥 오늘 세차 준비물':'🛒 인기 세차용품'}</span><span class="coupang-tag" style="margin-left:6px">쿠팡</span></div>
@@ -625,19 +594,29 @@ function render(){
           <div class="flex-c" style="gap:3px;margin-bottom:2px"><span class="coupang-price" style="font-size:14px">₩${p.price}</span><span style="font-size:9px;color:var(--red);font-weight:800">${p.disc}%</span></div>
           ${p.rocket?'<div class="coupang-rocket">🚀 로켓배송</div>':''}</div>`).join('')}</div>
       <div style="text-align:center;margin-top:8px;font-size:12px;color:#ff4154;font-weight:700">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div></div>`;
-    
-    // 데이터 소스 표시
-    if(S.lastFetch){
-      html+=`<div style="text-align:center;font-size:9px;color:var(--text3);padding:4px 0">
-        데이터: OpenWeatherMap API · 마지막 업데이트: ${S.lastFetch.toLocaleTimeString('ko-KR')}
+
+    // 공유하기
+    html += `<div class="share-section">
+      <div style="font-size:13px;font-weight:700;margin-bottom:2px">🔗 친구에게 공유하기</div>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:8px">세차 고민하는 친구에게 알려주세요!</div>
+      <div class="share-btns">
+        <button class="share-btn share-kakao" onclick="shareKakao()">💬 카카오톡</button>
+        <button class="share-btn share-copy" onclick="copyLink()">🔗 링크 복사</button>
+      </div></div>`;
+
+    // 데이터 소스
+    if (S.lastFetch) {
+      html += `<div style="text-align:center;font-size:9px;color:var(--text3);padding:4px 0">
+        데이터: OpenWeatherMap API · ${S.location?.name || ''} · ${S.lastFetch.toLocaleTimeString('ko-KR')}
         <span style="cursor:pointer;color:var(--blue)" onclick="loadWeatherData()"> 🔄</span></div>`;
     }
-    html+=`</div>`;
+    html += `</div>`;
   }
 
-  // CALENDAR
-  if(S.tab==="calendar"){const y=S.currentMonth.getFullYear(),m=S.currentMonth.getMonth(),fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate();
-    html+=`<div class="page"><h2 style="font-size:18px;font-weight:800;margin:6px 0 14px">📅 세차 캘린더</h2>
+  // ══════ CALENDAR ══════
+  if (S.tab === "calendar") {
+    const y=S.currentMonth.getFullYear(),m=S.currentMonth.getMonth(),fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate();
+    html += `<div class="page"><h2 style="font-size:18px;font-weight:800;margin:6px 0 14px">📅 세차 캘린더</h2>
       <div class="card" style="padding:16px"><div class="flex-b" style="margin-bottom:12px">
         <span style="font-size:18px;cursor:pointer;color:var(--text2)" onclick="state.currentMonth=new Date(${y},${m-1},1);render();">‹</span>
         <span style="font-size:15px;font-weight:700">${y}년 ${m+1}월</span>
@@ -650,27 +629,31 @@ function render(){
       <div class="card" style="background:${gr.bg};border-color:${gr.color}22;margin-top:8px">
         <div style="font-size:11px;color:var(--text2);margin-bottom:6px">${S.selectedDate.getMonth()+1}월 ${S.selectedDate.getDate()}일 (${DAYS_KR[S.selectedDate.getDay()]})</div>
         <div class="flex-c" style="gap:10px">${ringSVG(sc,65)}<div><div style="font-size:16px;font-weight:800;color:${gr.color}">${gr.g} ${gr.emoji}</div>
-        <div style="font-size:11px;color:var(--text2);margin-top:3px">${w.icon} ${w.label} · ${w.temp}°C · 강수 ${w.rainChance}%</div></div></div></div></div>`;}
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">${w.icon} ${w.label} · ${w.temp}°C · 강수 ${w.rainChance}%</div></div></div></div></div>`;
+  }
 
-  // SHOPS
-  if(S.tab==="shops"){const fl=S.shopFilter==="전체"?SHOPS:SHOPS.filter(s=>s.tags.includes(S.shopFilter));
-    html+=`<div class="page"><h2 style="font-size:18px;font-weight:800;margin:6px 0 14px">📍 주변 세차장</h2>
+  // ══════ SHOPS ══════
+  if (S.tab === "shops") {
+    const fl = S.shopFilter==="전체" ? SHOPS : SHOPS.filter(s=>s.tags.includes(S.shopFilter));
+    html += `<div class="page"><h2 style="font-size:18px;font-weight:800;margin:6px 0 14px">📍 주변 세차장</h2>
       <div class="chips">${["전체","셀프","자동","손세차","프리미엄","디테일링","24시간","월정액"].map(f=>`<div class="chip${S.shopFilter===f?' active':''}" onclick="state.shopFilter='${f}';render();">${f}</div>`).join('')}</div>
       ${fl.map(s=>`<div class="card" style="cursor:pointer" onclick="notify('📞 ${s.name} 전화 연결')"><div class="flex-c" style="gap:10px"><div style="font-size:32px">${s.img}</div><div style="flex:1">
         <div class="flex-b"><span style="font-size:14px;font-weight:700">${s.name}</span><span style="font-size:11px;color:var(--text3)">${s.dist}</span></div>
         <div style="font-size:11px;color:var(--text2);margin-top:2px">⭐ ${s.rating} · ${s.type} · ${s.hours}</div>
         <div style="font-size:13px;font-weight:700;margin-top:3px">${s.price}</div>
-        ${s.discount?`<div style="margin-top:5px;background:rgba(244,114,182,0.08);border:1px solid rgba(244,114,182,0.12);border-radius:7px;padding:4px 10px;font-size:11px;color:var(--pink);font-weight:600;display:inline-block">🎫 ${s.discount}</div>`:''}</div></div></div>`).join('')}</div>`;}
+        ${s.discount?`<div style="margin-top:5px;background:rgba(244,114,182,0.08);border:1px solid rgba(244,114,182,0.12);border-radius:7px;padding:4px 10px;font-size:11px;color:var(--pink);font-weight:600;display:inline-block">🎫 ${s.discount}</div>`:''}</div></div></div>`).join('')}</div>`;
+  }
 
-  // SHOP (쿠팡)
-  if(S.tab==="shop"){const fl=S.prodFilter==="전체"?PRODUCTS:PRODUCTS.filter(p=>p.cat===S.prodFilter);
-    html+=`<div class="page"><div class="flex-b" style="margin:6px 0 4px"><div><h2 style="font-size:18px;font-weight:800;display:inline">🛒 세차용품</h2>
+  // ══════ SHOP (쿠팡) ══════
+  if (S.tab === "shop") {
+    const fl = S.prodFilter==="전체" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===S.prodFilter);
+    html += `<div class="page"><div class="flex-b" style="margin:6px 0 4px"><div><h2 style="font-size:18px;font-weight:800;display:inline">🛒 세차용품</h2>
       <span class="coupang-tag" style="margin-left:6px">쿠팡 파트너스</span></div></div>
       <p style="font-size:11px;color:var(--text3);margin:4px 0 8px">최저가 · 로켓배송 · 구매 시 앱 지원에 도움이 됩니다</p>
       <div style="background:rgba(227,24,55,0.1);border:1px solid rgba(227,24,55,0.2);border-radius:10px;padding:10px 14px;margin-bottom:10px;text-align:center"><span style="font-size:13px;font-weight:800;color:#ff4154">📢 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</span></div>
       <div class="chips">${["전체","샴푸","워시미트","디테일러","코팅","타월","타이어","클리너"].map(f=>`<div class="chip${S.prodFilter===f?' active':''}" onclick="state.prodFilter='${f}';render();">${f}</div>`).join('')}</div>
       <div class="grid-2">${fl.map(p=>{const ri=PRODUCTS.indexOf(p);
-        return`<div class="prod-card" onclick="openProduct(${ri})">
+        return `<div class="prod-card" onclick="openProduct(${ri})">
           ${p.badge?`<div class="prod-badge" style="background:${p.badge==="SALE"?"rgba(34,197,94,0.2);color:var(--green)":p.badge==="PREMIUM"?"rgba(245,158,11,0.25);color:var(--amber)":"rgba(227,24,55,0.15);color:#ff6b7a"}">${p.badge}</div>`:''}
           <div style="font-size:32px;margin-bottom:6px;text-align:center">${p.img}</div>
           <div style="font-size:11px;color:var(--text2);line-height:1.3;margin-bottom:4px;min-height:28px">${p.name}</div>
@@ -679,11 +662,13 @@ function render(){
           <div style="font-size:10px;color:var(--text2);margin-top:3px"><span class="stars">${starsHTML(p.rating)}</span> ${p.rating} (${p.reviews.toLocaleString()})</div>
           ${p.rocket?'<div class="coupang-rocket" style="margin-top:3px">🚀 로켓배송</div>':''}
           <div style="margin-top:6px;background:var(--coupang);text-align:center;border-radius:7px;padding:6px 0;font-size:11px;font-weight:700;color:#fff">쿠팡에서 보기</div></div>`;}).join('')}</div>
-      <div style="text-align:center;padding:14px 0;font-size:13px;color:#ff4154;font-weight:800;line-height:1.6">📢 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div></div>`;}
+      <div style="text-align:center;padding:14px 0;font-size:13px;color:#ff4154;font-weight:800;line-height:1.6">📢 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div></div>`;
+  }
 
-  // MY CAR
-  if(S.tab==="mycar"){const total=S.washLogs.reduce((a,b)=>a+b.cost,0);
-    html+=`<div class="page"><h2 style="font-size:18px;font-weight:800;margin:6px 0 14px">🚗 내 차 관리</h2>
+  // ══════ MY CAR ══════
+  if (S.tab === "mycar") {
+    const total = S.washLogs.reduce((a,b)=>a+b.cost,0);
+    html += `<div class="page"><h2 style="font-size:18px;font-weight:800;margin:6px 0 14px">🚗 내 차 관리</h2>
       <div class="grid-3" style="margin-bottom:14px">
         <div class="card"><div style="font-size:9px;color:var(--text3)">세차 횟수</div><div style="font-size:20px;font-weight:800;color:var(--blue);font-family:Outfit">${S.washLogs.length}회</div></div>
         <div class="card"><div style="font-size:9px;color:var(--text3)">총 비용</div><div style="font-size:14px;font-weight:800;color:var(--pink);font-family:Outfit">₩${total.toLocaleString()}</div></div>
@@ -696,11 +681,13 @@ function render(){
       <div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 세차 히스토리</div>
       ${S.washLogs.map(l=>`<div class="card flex-b" style="padding:10px 14px"><div><div style="font-size:13px;font-weight:600">${l.type}</div>
         <div style="font-size:10px;color:var(--text3);margin-top:1px">${l.date}${l.note?' · '+l.note:''}</div></div>
-        <div style="font-size:14px;font-weight:800;color:var(--pink);font-family:Outfit">₩${l.cost.toLocaleString()}</div></div>`).join('')}</div>`;}
+        <div style="font-size:14px;font-weight:800;color:var(--pink);font-family:Outfit">₩${l.cost.toLocaleString()}</div></div>`).join('')}</div>`;
+  }
 
-  // PRODUCT DETAIL POPUP
-  if(S.selectedProduct!==null){const p=PRODUCTS[S.selectedProduct];
-    html+=`<div class="modal-overlay" onclick="closeProduct()"><div class="modal-sheet" onclick="event.stopPropagation()">
+  // ══════ PRODUCT DETAIL ══════
+  if (S.selectedProduct !== null) {
+    const p = PRODUCTS[S.selectedProduct];
+    html += `<div class="modal-overlay" onclick="closeProduct()"><div class="modal-sheet" onclick="event.stopPropagation()">
       <div style="text-align:center;margin-bottom:14px"><div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto"></div></div>
       <div style="text-align:center;margin-bottom:16px"><div style="font-size:56px;margin-bottom:10px">${p.img}</div>
         ${p.badge?`<span style="display:inline-block;background:rgba(227,24,55,0.15);color:#ff6b7a;font-size:11px;font-weight:800;padding:3px 10px;border-radius:6px;margin-bottom:8px">${p.badge}</span>`:''}
@@ -719,62 +706,48 @@ function render(){
       <button class="btn btn-coupang" onclick="goToCoupang(${S.selectedProduct})">🔗 쿠팡에서 최저가로 구매하기</button>
       <button class="btn btn-ghost" style="margin-top:8px;font-size:12px" onclick="goToCoupang(${S.selectedProduct})">쿠팡 앱에서 열기 →</button>
       <div style="text-align:center;margin-top:10px;font-size:12px;color:#ff4154;font-weight:700;line-height:1.6">📢 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
-      <button class="btn" style="background:transparent;color:var(--text3);font-size:12px;margin-top:8px" onclick="closeProduct()">닫기</button></div></div>`;}
-
-  // API 설정 모달
-  if(S.showApiSetup){
-    html+=`<div class="modal-overlay" style="align-items:center" onclick="state.showApiSetup=false;render();">
-      <div class="modal-box" style="border-color:rgba(96,165,250,0.2)" onclick="event.stopPropagation()">
-        <div style="text-align:center;margin-bottom:16px"><span style="font-size:40px">🌤️</span>
-          <h3 style="font-size:18px;font-weight:800;color:var(--blue);margin:8px 0 4px">실시간 날씨 연동</h3>
-          <p style="font-size:11px;color:var(--text2);line-height:1.6">OpenWeatherMap에서 무료 API 키를 발급받아 입력하세요.</p></div>
-        
-        <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:12px;margin-bottom:12px;font-size:11px;color:var(--text2);line-height:1.7">
-          <div style="font-weight:700;color:var(--text);margin-bottom:4px">API 키 발급 방법:</div>
-          1. <span style="color:var(--blue);cursor:pointer" onclick="window.open('https://openweathermap.org/api','_blank')">openweathermap.org</span> 접속<br>
-          2. 무료 회원가입<br>
-          3. My API Keys에서 키 복사<br>
-          4. 아래에 붙여넣기</div>
-        
-        <input id="api-key-input" class="api-key-input" type="text" placeholder="API 키를 입력하세요" value="${S.apiKey}" />
-        
-        <button class="btn btn-blue" onclick="saveApiKeyAndLoad()">저장 및 날씨 불러오기</button>
-        
-        ${S.apiKey?`<button class="btn btn-ghost" style="margin-top:8px;font-size:12px;color:var(--red)" onclick="state.apiKey='';localStorage.removeItem('${STORAGE_KEY}');state.weatherData=null;state.forecastData=null;state.forecastDays=null;state.showApiSetup=false;notify('🗑️ API 키 삭제됨');render();">API 키 삭제</button>`:''}
-        
-        <button class="btn" style="background:transparent;color:var(--text3);font-size:12px;margin-top:8px" onclick="state.showApiSetup=false;render();">닫기</button>
-      </div></div>`;
+      <button class="btn" style="background:transparent;color:var(--text3);font-size:12px;margin-top:8px" onclick="closeProduct()">닫기</button></div></div>`;
   }
 
-  // PREMIUM MODAL
-  if(S.showPremiumModal){html+=`<div class="modal-overlay" style="align-items:center" onclick="state.showPremiumModal=false;render();">
-    <div class="modal-box" onclick="event.stopPropagation()"><div style="text-align:center;margin-bottom:16px"><span style="font-size:40px">👑</span>
-      <h3 style="font-size:20px;font-weight:800;color:var(--amber);margin:8px 0 4px">PRO 멤버십</h3></div>
-      ${[{i:"🚫",t:"모든 광고 제거"},{i:"📅",t:"14일 세차 예보"},{i:"🔔",t:"푸시 알림"},{i:"🌫️",t:"미세먼지 예측"},{i:"📊",t:"세차 리포트"},{i:"🎫",t:"추가 할인"},{i:"🛒",t:"무료배송"},{i:"⚡",t:"우선 지원"}].map(it=>
-        `<div class="flex-c" style="gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="font-size:16px">${it.i}</span><span style="font-size:13px">${it.t}</span></div>`).join('')}
-      <div style="margin-top:16px"><button class="btn btn-amber" style="font-size:15px;padding:13px" onclick="state.isPremium=true;state.showPremiumModal=false;state.showBanner=false;notify('🎉 PRO!');render();">월 ₩2,900 시작</button>
-      <div style="text-align:center;margin-top:6px;font-size:11px;color:var(--text3)">연간 ₩24,900 (30% 할인)</div>
-      <button class="btn" style="background:transparent;color:var(--text3);font-size:12px;margin-top:6px" onclick="state.showPremiumModal=false;render();">나중에</button></div></div></div>`;}
+  // ══════ PREMIUM MODAL ══════
+  if (S.showPremiumModal) {
+    html += `<div class="modal-overlay" style="align-items:center" onclick="state.showPremiumModal=false;render();">
+      <div class="modal-box" onclick="event.stopPropagation()"><div style="text-align:center;margin-bottom:16px"><span style="font-size:40px">👑</span>
+        <h3 style="font-size:20px;font-weight:800;color:var(--amber);margin:8px 0 4px">PRO 멤버십</h3></div>
+        ${[{i:"🚫",t:"모든 광고 제거"},{i:"📅",t:"14일 세차 예보"},{i:"🔔",t:"푸시 알림"},{i:"🌫️",t:"미세먼지 예측"},{i:"📊",t:"세차 리포트"},{i:"🎫",t:"추가 할인"},{i:"🛒",t:"무료배송"},{i:"⚡",t:"우선 지원"}].map(it=>
+          `<div class="flex-c" style="gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="font-size:16px">${it.i}</span><span style="font-size:13px">${it.t}</span></div>`).join('')}
+        <div style="margin-top:16px"><button class="btn btn-amber" style="font-size:15px;padding:13px" onclick="state.isPremium=true;state.showPremiumModal=false;state.showBanner=false;notify('🎉 PRO 활성화!');render();">월 ₩2,900 시작</button>
+        <div style="text-align:center;margin-top:6px;font-size:11px;color:var(--text3)">연간 ₩24,900 (30% 할인)</div>
+        <button class="btn" style="background:transparent;color:var(--text3);font-size:12px;margin-top:6px" onclick="state.showPremiumModal=false;render();">나중에</button></div></div></div>`;
+  }
 
-  if(S.notification)html+=`<div class="notif">${S.notification}</div>`;
-  if(S.isPremium)html+=`<div class="pro-badge">👑 PRO</div>`;
-  html+=`<div class="tab-bar">${[{id:"home",icon:"🏠",l:"홈"},{id:"calendar",icon:"📅",l:"달력"},{id:"shops",icon:"📍",l:"세차장"},{id:"shop",icon:"🛒",l:"용품샵"},{id:"mycar",icon:"🚗",l:"내차"}].map(t=>
+  // Notification
+  if (S.notification) html += `<div class="notif">${S.notification}</div>`;
+  if (S.isPremium) html += `<div class="pro-badge">👑 PRO</div>`;
+
+  // Tab Bar
+  html += `<div class="tab-bar">${[{id:"home",icon:"🏠",l:"홈"},{id:"calendar",icon:"📅",l:"달력"},{id:"shops",icon:"📍",l:"세차장"},{id:"shop",icon:"🛒",l:"용품샵"},{id:"mycar",icon:"🚗",l:"내차"}].map(t=>
     `<div class="tab-item${S.tab===t.id?' active':''}" onclick="setTab('${t.id}')"><span class="icon">${t.icon}</span><span>${t.l}</span></div>`).join('')}</div>`;
-  document.getElementById('app').innerHTML=html;
+
+  document.getElementById('app').innerHTML = html;
 }
 
-function addLog(){if(!state.newLog.cost)return;state.washLogs.unshift({date:today.toISOString().split('T')[0],type:state.newLog.type,cost:parseInt(state.newLog.cost),note:state.newLog.note});
-  state.newLog={type:"셀프세차",cost:"",note:""};state.showAddLog=false;notify("✅ 저장 완료!");}
+function addLog() {
+  if(!state.newLog.cost) return;
+  state.washLogs.unshift({date:today.toISOString().split('T')[0],type:state.newLog.type,cost:parseInt(state.newLog.cost),note:state.newLog.note});
+  state.newLog={type:"셀프세차",cost:"",note:""};state.showAddLog=false;notify("✅ 저장 완료!");
+}
 
+// ═══ 자동 시작 ═══
 // 배너 자동 전환
-setInterval(()=>{if(!state.isPremium){state.bannerIdx++;if(state.showBanner&&state.tab==="home")render();}},5000);
+setInterval(()=>{ if(!state.isPremium){state.bannerIdx++;if(state.showBanner&&state.tab==="home")render();} },5000);
 
 // 날씨 자동 갱신 (10분마다)
-setInterval(()=>{if(state.apiKey && state.location)loadWeatherData();},600000);
+setInterval(()=>{ if(state.location) loadWeatherData(); },600000);
 
-// 초기화
+// 🚀 앱 시작 — 즉시 실행!
 render();
-if(state.apiKey){loadWeatherData();}
+loadWeatherData();
 </script>
 </body>
 </html>
