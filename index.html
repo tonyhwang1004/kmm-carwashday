@@ -170,19 +170,14 @@ let state = {
   weatherLoading: true,
   weatherError: null,
   lastFetch: null,
-  // 세차 기록
-  washLogs: [
-
-// ─── 세차장 검색 관련 state ───
-// nearbyShops: 카카오 API로 검색한 실제 세차장 목록
-// shopSearchLoading: 검색 중 여부
-// shopSearchKeyword: 검색 키워드
-// shopMapQuery: 지도에 표시할 검색어
+  // 세차장 검색 관련 state
   nearbyShops: [],
   shopSearchLoading: false,
   shopSearchKeyword: '세차장',
   shopMapQuery: '',
   shopSearchDone: false,
+  // 세차 기록
+  washLogs: [
     {date:"2026-02-01",type:"셀프세차",cost:7000,note:"외부세차"},
     {date:"2026-01-18",type:"자동세차",cost:8000,note:""},
     {date:"2025-12-28",type:"손세차",cost:30000,note:"풀세차"},
