@@ -7,6 +7,18 @@
 <meta name="description" content="실시간 날씨 기반 세차 점수 확인! 미세먼지, 강수확률, 기온을 분석해 최적의 세차 타이밍을 알려드립니다."/>
 <meta property="og:title" content="🚿 세차의 날 — 오늘 세차해도 될까?"/>
 <meta property="og:description" content="날씨 기반 세차 점수를 무료로 확인하세요. 7일 예보, 세차장 찾기, 용품 추천까지!"/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="icons/icon-512.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="세차의날"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="msapplication-TileColor" content="#04060e"/>
+<meta name="msapplication-TileImage" content="icons/icon-144.png"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;800;900&family=Outfit:wght@300;400;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
 <style>
@@ -122,6 +134,11 @@ body{background:var(--bg);font-family:'Noto Sans KR','Outfit',sans-serif;color:v
 .map-tabs{display:flex;gap:4px;margin-bottom:10px;overflow-x:auto}
 .map-tab{padding:7px 14px;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;background:rgba(255,255,255,0.04);color:var(--text2);border:1px solid rgba(255,255,255,0.06);transition:all 0.15s}
 .map-tab.active{background:rgba(96,165,250,0.15);color:var(--blue);border-color:rgba(96,165,250,0.25)}
+
+/* PWA Install Banner */
+.pwa-banner{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:linear-gradient(135deg,#1e3a5f,#1a1a4e);border:1px solid rgba(96,165,250,0.25);border-radius:16px;padding:14px 16px;z-index:99;box-shadow:0 8px 32px rgba(0,0,0,0.5);display:none;animation:slideUp 0.3s ease}
+.pwa-banner.show{display:block}
+.pwa-banner .close{position:absolute;top:8px;right:12px;font-size:14px;color:var(--text3);cursor:pointer}
 
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideDown{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
@@ -972,6 +989,96 @@ setInterval(()=>{ if(state.location) loadWeatherData(); },600000);
 // 🚀 앱 시작 — 즉시 실행!
 render();
 loadWeatherData();
+
+// ═══ PWA: 서비스워커 등록 ═══
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.log('SW registration failed:', err));
+  });
+}
+
+// ═══ PWA: 설치 배너 ═══
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBanner();
+});
+
+function showInstallBanner() {
+  // 이미 설치되었으면 표시 안 함
+  if (window.matchMedia('(display-mode: standalone)').matches) return;
+  if (localStorage.getItem('pwa-banner-dismissed')) return;
+  
+  const banner = document.createElement('div');
+  banner.className = 'pwa-banner show';
+  banner.id = 'pwaBanner';
+  banner.innerHTML = `
+    <span class="close" onclick="dismissInstallBanner()">✕</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🚿</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:800;color:#fff">세차의 날 앱 설치</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">홈 화면에 추가하면 앱처럼 사용!</div>
+      </div>
+      <button onclick="installPWA()" style="background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">설치</button>
+    </div>
+  `;
+  document.body.appendChild(banner);
+}
+
+async function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    notify('🎉 앱이 설치되었습니다!');
+  }
+  deferredPrompt = null;
+  dismissInstallBanner();
+}
+
+function dismissInstallBanner() {
+  const b = document.getElementById('pwaBanner');
+  if (b) b.remove();
+  localStorage.setItem('pwa-banner-dismissed', 'true');
+}
+
+// ═══ iOS 전용 설치 안내 ═══
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+function isInStandaloneMode() {
+  return ('standalone' in window.navigator) && (window.navigator.standalone);
+}
+
+if (isIOS() && !isInStandaloneMode()) {
+  setTimeout(() => {
+    if (localStorage.getItem('ios-banner-dismissed')) return;
+    const iosBanner = document.createElement('div');
+    iosBanner.className = 'pwa-banner show';
+    iosBanner.id = 'iosBanner';
+    iosBanner.innerHTML = `
+      <span class="close" onclick="document.getElementById('iosBanner').remove();localStorage.setItem('ios-banner-dismissed','true');">✕</span>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🚿</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:800;color:#fff">홈 화면에 추가하기</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px;line-height:1.4">하단의 <span style="font-size:14px">⎙</span> 공유 버튼 → "홈 화면에 추가"를 눌러주세요</div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(iosBanner);
+  }, 3000);
+}
+
+// ═══ 앱 설치 상태 감지 ═══
+window.addEventListener('appinstalled', () => {
+  notify('🎉 세차의 날이 설치되었습니다!');
+  deferredPrompt = null;
+});
 </script>
 </body>
 </html>
