@@ -1,0 +1,85 @@
+{
+  "name": "세차의 날 - 날씨 기반 세차 점수",
+  "short_name": "세차의날",
+  "description": "실시간 날씨 기반 세차 점수 확인! 미세먼지, 강수확률, 기온을 분석해 최적의 세차 타이밍을 알려드립니다.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#04060e",
+  "theme_color": "#04060e",
+  "lang": "ko",
+  "categories": ["weather", "lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "홈 - 세차 점수 확인"
+    },
+    {
+      "src": "screenshots/calendar.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "세차 캘린더"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "오늘의 세차 점수",
+      "url": "/index.html",
+      "icons": [{"src": "icons/icon-96.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "주변 세차장",
+      "url": "/index.html#shops",
+      "icons": [{"src": "icons/icon-96.png", "sizes": "96x96"}]
+    }
+  ]
+}
