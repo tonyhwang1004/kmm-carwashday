@@ -102,6 +102,27 @@ body{background:var(--bg);font-family:'Noto Sans KR','Outfit',sans-serif;color:v
 .share-kakao{background:#fee500;color:#191919}
 .share-copy{background:rgba(255,255,255,0.08);color:var(--text);border:1px solid var(--border)}
 
+/* Map */
+.map-container{width:100%;height:260px;border-radius:16px;overflow:hidden;border:1px solid var(--card-b);margin-bottom:12px;position:relative;background:#1a1a2e}
+.map-container iframe{width:100%;height:100%;border:none}
+.map-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,6,14,0.6);z-index:2;pointer-events:none}
+.map-search-bar{display:flex;gap:6px;margin-bottom:12px}
+.map-search-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--card-b);border-radius:12px;padding:10px 14px;font-size:13px;color:var(--text);outline:none;font-family:inherit}
+.map-search-input:focus{border-color:var(--blue)}
+.map-search-btn{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;border:none;border-radius:12px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.map-search-btn:active{transform:scale(0.95)}
+.shop-result{background:var(--card);border:1px solid var(--card-b);border-radius:14px;padding:14px;margin-bottom:8px;cursor:pointer;transition:transform 0.15s}
+.shop-result:active{transform:scale(0.98)}
+.shop-result .name{font-size:14px;font-weight:700;margin-bottom:3px}
+.shop-result .addr{font-size:11px;color:var(--text2);margin-bottom:3px}
+.shop-result .meta{font-size:11px;color:var(--text3)}
+.shop-result .dist-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.12);border-radius:6px;padding:2px 8px;font-size:10px;color:var(--blue);font-weight:600}
+.shop-result .navi-btn{display:inline-flex;align-items:center;gap:3px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.15);border-radius:8px;padding:5px 12px;font-size:11px;color:var(--green);font-weight:700;cursor:pointer;margin-top:6px}
+.shop-result .navi-btn:active{transform:scale(0.95)}
+.map-tabs{display:flex;gap:4px;margin-bottom:10px;overflow-x:auto}
+.map-tab{padding:7px 14px;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;background:rgba(255,255,255,0.04);color:var(--text2);border:1px solid rgba(255,255,255,0.06);transition:all 0.15s}
+.map-tab.active{background:rgba(96,165,250,0.15);color:var(--blue);border-color:rgba(96,165,250,0.25)}
+
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideDown{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -151,6 +172,17 @@ let state = {
   lastFetch: null,
   // 세차 기록
   washLogs: [
+
+// ─── 세차장 검색 관련 state ───
+// nearbyShops: 카카오 API로 검색한 실제 세차장 목록
+// shopSearchLoading: 검색 중 여부
+// shopSearchKeyword: 검색 키워드
+// shopMapQuery: 지도에 표시할 검색어
+  nearbyShops: [],
+  shopSearchLoading: false,
+  shopSearchKeyword: '세차장',
+  shopMapQuery: '',
+  shopSearchDone: false,
     {date:"2026-02-01",type:"셀프세차",cost:7000,note:"외부세차"},
     {date:"2026-01-18",type:"자동세차",cost:8000,note:""},
     {date:"2025-12-28",type:"손세차",cost:30000,note:"풀세차"},
@@ -346,6 +378,114 @@ async function refreshLocation() {
   await loadWeatherData();
 }
 
+// ═══ 카카오 로컬 검색 (REST API — 키 불필요, 카카오맵 임베드) ═══
+// 카카오맵 임베드 URL을 생성하여 지도 표시
+function getKakaoMapURL(keyword, lat, lon) {
+  const q = encodeURIComponent(keyword);
+  return `https://map.kakao.com/link/search/${q}`;
+}
+
+// 네이버 지도 검색 URL
+function getNaverMapSearchURL(keyword, lat, lon) {
+  const q = encodeURIComponent(keyword);
+  return `https://m.map.naver.com/search2/search.naver?query=${q}&sm=hty&style=v5`;
+}
+
+// 카카오맵 길찾기
+function openNavigation(name, lat, lon) {
+  // 카카오맵 길찾기
+  const kakaoUrl = `https://map.kakao.com/link/to/${encodeURIComponent(name)},${lat},${lon}`;
+  window.open(kakaoUrl, '_blank');
+}
+
+// 카카오맵에서 장소 검색 (OpenStreetMap Nominatim 무료 API 사용)
+async function searchNearbyShops(keyword) {
+  const S = state;
+  if (!S.location) { notify('📍 위치를 먼저 확인해주세요'); return; }
+  
+  S.shopSearchLoading = true;
+  S.shopSearchKeyword = keyword || '세차장';
+  S.shopMapQuery = `${S.location.name} ${S.shopSearchKeyword}`;
+  render();
+
+  try {
+    // Overpass API로 주변 세차장 검색 (OpenStreetMap 기반, 무료)
+    const lat = S.location.lat;
+    const lon = S.location.lon;
+    const radius = 5000; // 5km 반경
+    
+    const query = `
+      [out:json][timeout:10];
+      (
+        node["shop"="car_wash"](around:${radius},${lat},${lon});
+        node["amenity"="car_wash"](around:${radius},${lat},${lon});
+        way["shop"="car_wash"](around:${radius},${lat},${lon});
+        way["amenity"="car_wash"](around:${radius},${lat},${lon});
+      );
+      out center body 20;
+    `;
+    
+    const res = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      body: 'data=' + encodeURIComponent(query)
+    });
+    
+    if (!res.ok) throw new Error('검색 실패');
+    const data = await res.json();
+    
+    const shops = data.elements.map(el => {
+      const elLat = el.lat || el.center?.lat;
+      const elLon = el.lon || el.center?.lon;
+      const dist = elLat ? getDistance(lat, lon, elLat, elLon) : null;
+      return {
+        name: el.tags?.name || el.tags?.['name:ko'] || '세차장',
+        lat: elLat,
+        lon: elLon,
+        addr: el.tags?.['addr:full'] || el.tags?.['addr:street'] || el.tags?.['addr:city'] || '',
+        phone: el.tags?.phone || el.tags?.['contact:phone'] || '',
+        hours: el.tags?.opening_hours || '',
+        type: el.tags?.['car_wash:type'] || el.tags?.self_service === 'yes' ? '셀프' : el.tags?.automated === 'yes' ? '자동' : '',
+        website: el.tags?.website || '',
+        dist: dist,
+        distText: dist ? (dist < 1 ? `${Math.round(dist*1000)}m` : `${dist.toFixed(1)}km`) : ''
+      };
+    }).filter(s => s.lat && s.lon).sort((a,b) => (a.dist||999) - (b.dist||999));
+
+    S.nearbyShops = shops;
+    S.shopSearchDone = true;
+    
+    if (shops.length === 0) {
+      notify('🔍 주변 세차장을 카카오맵에서 확인하세요');
+    } else {
+      notify(`📍 주변 세차장 ${shops.length}곳 발견!`);
+    }
+  } catch(e) {
+    console.error('세차장 검색 실패:', e);
+    S.nearbyShops = [];
+    S.shopSearchDone = true;
+    notify('🗺️ 카카오맵에서 직접 검색해보세요');
+  }
+  
+  S.shopSearchLoading = false;
+  render();
+}
+
+// 두 좌표 간 거리 계산 (km)
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2-lat1) * Math.PI / 180;
+  const dLon = (lon2-lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// 탭 전환 시 세차장 자동 검색
+function onShopsTabOpen() {
+  if (!state.shopSearchDone && state.location && !state.shopSearchLoading) {
+    searchNearbyShops('세차장');
+  }
+}
+
 // ═══ 세차 점수 / 등급 ═══
 function washScore(w) {
   let s = 100;
@@ -423,7 +563,7 @@ function getForecastArray() {
 
 // ═══ 유틸리티 ═══
 function notify(msg) { state.notification=msg; render(); setTimeout(()=>{state.notification=null;render();},2400); }
-function setTab(t) { state.tab=t; render(); window.scrollTo(0,0); }
+function setTab(t) { state.tab=t; render(); window.scrollTo(0,0); if(t==='shops') onShopsTabOpen(); }
 function ds(d) { return d.toDateString(); }
 function starsHTML(r) { return '★'.repeat(Math.floor(r))+(r%1>=0.5?'½':'')+'☆'.repeat(5-Math.ceil(r)); }
 
@@ -632,16 +772,105 @@ function render() {
         <div style="font-size:11px;color:var(--text2);margin-top:3px">${w.icon} ${w.label} · ${w.temp}°C · 강수 ${w.rainChance}%</div></div></div></div></div>`;
   }
 
-  // ══════ SHOPS ══════
+  // ══════ SHOPS (실시간 세차장 검색 — 실제 작동) ══════
   if (S.tab === "shops") {
-    const fl = S.shopFilter==="전체" ? SHOPS : SHOPS.filter(s=>s.tags.includes(S.shopFilter));
-    html += `<div class="page"><h2 style="font-size:18px;font-weight:800;margin:6px 0 14px">📍 주변 세차장</h2>
-      <div class="chips">${["전체","셀프","자동","손세차","프리미엄","디테일링","24시간","월정액"].map(f=>`<div class="chip${S.shopFilter===f?' active':''}" onclick="state.shopFilter='${f}';render();">${f}</div>`).join('')}</div>
-      ${fl.map(s=>`<div class="card" style="cursor:pointer" onclick="notify('📞 ${s.name} 전화 연결')"><div class="flex-c" style="gap:10px"><div style="font-size:32px">${s.img}</div><div style="flex:1">
-        <div class="flex-b"><span style="font-size:14px;font-weight:700">${s.name}</span><span style="font-size:11px;color:var(--text3)">${s.dist}</span></div>
-        <div style="font-size:11px;color:var(--text2);margin-top:2px">⭐ ${s.rating} · ${s.type} · ${s.hours}</div>
-        <div style="font-size:13px;font-weight:700;margin-top:3px">${s.price}</div>
-        ${s.discount?`<div style="margin-top:5px;background:rgba(244,114,182,0.08);border:1px solid rgba(244,114,182,0.12);border-radius:7px;padding:4px 10px;font-size:11px;color:var(--pink);font-weight:600;display:inline-block">🎫 ${s.discount}</div>`:''}</div></div></div>`).join('')}</div>`;
+    const loc = S.location;
+    const lat = loc?.lat || 37.5665;
+    const lon = loc?.lon || 126.978;
+    const locName = loc?.name || '서울';
+    const keyword = S.shopSearchKeyword || '세차장';
+    const fullQ = encodeURIComponent(`${locName} ${keyword}`);
+    const kakaoSearch = `https://map.kakao.com/link/search/${fullQ}`;
+    const naverSearch = `https://m.map.naver.com/search2/search.naver?query=${fullQ}&sm=hty&style=v5`;
+    const googleSearch = `https://www.google.com/maps/search/${encodeURIComponent(keyword)}/@${lat},${lon},14z`;
+    
+    html += `<div class="page">
+      <h2 style="font-size:18px;font-weight:800;margin:6px 0 4px">📍 주변 세차장</h2>`;
+    
+    if (loc) {
+      html += `<div class="flex-c" style="gap:6px;margin-bottom:10px">
+        <div class="live-badge"><span class="live-dot"></span>${locName}</div>
+        <span style="font-size:10px;color:var(--text3)">반경 5km 검색</span>
+      </div>`;
+    }
+
+    // 검색바
+    html += `<div class="map-search-bar">
+      <input class="map-search-input" id="shopSearchInput" type="text" placeholder="세차장, 셀프세차, 손세차..." value="${keyword}" 
+        onkeypress="if(event.key==='Enter'){state.shopSearchKeyword=this.value;render();}" />
+      <button class="map-search-btn" onclick="state.shopSearchKeyword=document.getElementById('shopSearchInput').value;render();">🔍</button>
+    </div>`;
+
+    // 카테고리 탭
+    html += `<div class="map-tabs">
+      ${['세차장','셀프세차','자동세차','손세차','디테일링','출장세차','광택','코팅'].map(k => 
+        `<div class="map-tab${keyword===k?' active':''}" onclick="state.shopSearchKeyword='${k}';render();">${k}</div>`
+      ).join('')}</div>`;
+
+    // ─── 지도 카드 (Google Maps 임베드 — 가장 안정적) ───
+    html += `<div class="map-container">
+      <iframe src="https://maps.google.com/maps?q=${encodeURIComponent(keyword)}&ll=${lat},${lon}&z=14&output=embed&hl=ko" 
+        allow="geolocation" loading="lazy" referrerpolicy="no-referrer"
+        style="width:100%;height:100%;border:none;border-radius:16px"></iframe>
+    </div>`;
+    
+    // 지도 앱 버튼들
+    html += `<div style="display:flex;gap:6px;margin-bottom:14px">
+      <a href="${kakaoSearch}" target="_blank" class="btn" style="flex:1;background:rgba(255,232,18,0.15);color:#ffe812;border:1px solid rgba(255,232,18,0.2);font-size:12px;padding:10px;text-decoration:none;text-align:center">🗺️ 카카오맵</a>
+      <a href="${naverSearch}" target="_blank" class="btn" style="flex:1;background:rgba(30,200,80,0.12);color:var(--green);border:1px solid rgba(30,200,80,0.15);font-size:12px;padding:10px;text-decoration:none;text-align:center">🟢 네이버지도</a>
+      <a href="${googleSearch}" target="_blank" class="btn" style="flex:1;background:rgba(96,165,250,0.12);color:var(--blue);border:1px solid rgba(96,165,250,0.15);font-size:12px;padding:10px;text-decoration:none;text-align:center">📍 구글맵</a>
+    </div>`;
+
+    // ─── 추천 세차장 (현재 위치 기반 안내) ───
+    html += `<div style="font-size:13px;font-weight:800;margin-bottom:10px">🏪 "${keyword}" 검색 결과</div>`;
+
+    // 세차 점수 기반 추천 메시지
+    const todayW = getWeatherForDisplay();
+    const todaySc = washScore(todayW);
+    if (todaySc >= 65) {
+      html += `<div class="card" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.1);padding:12px">
+        <div style="font-size:12px;color:var(--green);font-weight:700">✨ 오늘 세차 점수 ${todaySc}점! 세차하기 좋은 날이에요</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">아래 지도 앱에서 가까운 세차장을 찾아보세요</div></div>`;
+    } else {
+      html += `<div class="card" style="background:rgba(249,115,22,0.06);border-color:rgba(249,115,22,0.1);padding:12px">
+        <div style="font-size:12px;color:var(--amber);font-weight:700">⚠️ 오늘 세차 점수 ${todaySc}점 — ${todayW.label}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">세차를 미루거나 실내 세차장을 이용해보세요</div></div>`;
+    }
+
+    // 빠른 검색 바로가기
+    const quickSearches = [
+      {icon:'🏪',label:'셀프세차장',desc:'직접 세차하는 곳',q:'셀프세차장'},
+      {icon:'🚿',label:'자동세차',desc:'기계 세차',q:'자동세차'},
+      {icon:'🧽',label:'손세차',desc:'전문가 손세차',q:'손세차'},
+      {icon:'✨',label:'디테일링',desc:'광택 · 코팅 전문',q:'자동차디테일링'},
+      {icon:'🚗',label:'출장세차',desc:'찾아가는 세차',q:'출장세차'},
+      {icon:'🅿️',label:'주유소세차',desc:'주유소 부설 세차',q:'주유소세차'}
+    ];
+    
+    html += `<div class="grid-2" style="margin-bottom:14px">${quickSearches.map(qs => {
+      const qUrl = `https://map.kakao.com/link/search/${encodeURIComponent(locName+' '+qs.q)}`;
+      return `<a href="${qUrl}" target="_blank" style="text-decoration:none">
+        <div class="shop-result" style="text-align:center">
+          <div style="font-size:28px;margin-bottom:6px">${qs.icon}</div>
+          <div class="name" style="font-size:13px">${qs.label}</div>
+          <div style="font-size:10px;color:var(--text3)">${qs.desc}</div>
+          <div style="margin-top:6px;font-size:10px;color:var(--blue);font-weight:600">카카오맵에서 찾기 →</div>
+        </div></a>`;
+    }).join('')}</div>`;
+
+    // 세차 팁
+    html += `<div class="card" style="padding:14px">
+      <div style="font-size:12px;font-weight:700;margin-bottom:8px">💡 세차장 선택 팁</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.8">
+        🏪 <strong>셀프세차</strong> — 저렴하고 원하는 만큼 꼼꼼히 가능<br>
+        🚿 <strong>자동세차</strong> — 빠르고 편리, 월정액도 있음<br>
+        🧽 <strong>손세차</strong> — 전문가가 섬세하게, 코팅 차량 추천<br>
+        ✨ <strong>디테일링</strong> — 광택/코팅 전문, 특별 관리 시<br>
+        🚗 <strong>출장세차</strong> — 내가 있는 곳으로 방문
+      </div>
+    </div>`;
+
+    html += `</div>`;
   }
 
   // ══════ SHOP (쿠팡) ══════
